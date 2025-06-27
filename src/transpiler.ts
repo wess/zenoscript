@@ -93,17 +93,39 @@ export class ZenoscriptTranspiler {
 
   private transformLetBindings(source: string): string {
     // Transform: let name = value -> const name = value;
-    return source.replace(/^let\s+(\w+)\s*=\s*(.+)$/gm, 'const $1 = $2;');
+    // Handle both multiline and single line with or without semicolons
+    let result = source.replace(/^let\s+(\w+)\s*=\s*(.+)$/gm, 'const $1 = $2;');
+    
+    // Also handle inline let statements (not at start of line)
+    result = result.replace(/\blet\s+(\w+)\s*=\s*([^;]+);?\s*/g, 'const $1 = $2; ');
+    
+    return result;
   }
 
   private transformPipeExpressions(source: string): string {
-    // Transform: value |> func -> value.func()
-    // Handle chained pipes: value |> func1 |> func2 -> value.func1().func2()
+    // Transform pipe chains: value |> func1 |> func2 -> func2(func1(value))
     let result = source;
     
-    // Handle quoted strings and function calls in pipes
-    result = result.replace(/("[^"]*")\s*\|\>\s*(\w+)/g, '$1.$2()');
-    result = result.replace(/(\w+(?:\.\w+)*(?:\(\))?)\s*\|\>\s*(\w+)/g, '$1.$2()');
+    // Find all pipe expressions and process them (but respect statement boundaries)
+    result = result.replace(/([^;|\n]+(?:\|>[^;|\n]+)+)/g, (match) => {
+      const parts = match.split('|>').map(part => part.trim());
+      const value = parts[0];
+      const functions = parts.slice(1);
+      
+      // Build nested function calls from right to left
+      let expr = value;
+      for (const func of functions) {
+        if (func.includes('.')) {
+          // Handle dot notation like console.log
+          expr = `${func}(${expr})`;
+        } else {
+          // Handle method calls by converting to dot notation
+          expr = `(${expr}).${func}()`;
+        }
+      }
+      
+      return expr;
+    });
     
     return result;
   }

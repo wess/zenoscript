@@ -153,6 +153,30 @@ zenoscript = "zenoscript/plugin"
   }
 }
 
+async function executeInline(code: string) {
+  const transpiler = new ZenoscriptTranspiler({ debug: false });
+  
+  try {
+    // Transpile the input
+    const typescript = transpiler.transpile(code);
+    
+    // Execute the TypeScript - wrap in an IIFE for multiple statements
+    try {
+      const wrappedCode = `(function() { ${typescript} })()`;
+      const result = eval(wrappedCode);
+      if (result !== undefined) {
+        console.log(result);
+      }
+    } catch (execError) {
+      console.error("Execution error:", execError.message);
+      process.exit(1);
+    }
+  } catch (error) {
+    console.error("Transpilation error:", error.message);
+    process.exit(1);
+  }
+}
+
 async function startRepl() {
   console.log("Starting Zenoscript REPL...");
   console.log("Type 'exit' or press Ctrl+C to quit\n");
@@ -212,6 +236,18 @@ async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
   
+  // Handle -e flag for inline execution
+  const evalIndex = args.indexOf('-e');
+  if (evalIndex !== -1) {
+    if (evalIndex + 1 >= args.length) {
+      console.error('Error: No code provided after -e flag');
+      process.exit(1);
+    }
+    const code = args[evalIndex + 1];
+    await executeInline(code);
+    return;
+  }
+  
   // Handle special commands
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
     console.log(`Zenoscript CLI
@@ -222,6 +258,7 @@ Commands:
   init                    Initialize a new Zenoscript project
   setup                   Setup Zenoscript plugin for Bun
   repl                    Start interactive REPL
+  -e <code>               Execute Zenoscript code inline
   <file>                  Transpile a Zenoscript file
 
 Options:
@@ -234,6 +271,7 @@ Examples:
   zeno init              # Initialize new project
   zeno setup             # Setup plugin
   zeno repl              # Start REPL
+  zeno -e '"Hello" |> console.log'  # Execute code inline
   zeno input.zs          # Transpile file
   zeno input.zs output.ts # Transpile to specific output
 `);
@@ -241,7 +279,7 @@ Examples:
   }
   
   if (args.includes("--version") || args.includes("-v")) {
-    let version = "0.0.2"; // fallback version
+    let version = "0.1.3"; // fallback version
     
     // Try to read VERSION file from different possible locations
     const possiblePaths = [

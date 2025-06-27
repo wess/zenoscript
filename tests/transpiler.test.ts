@@ -57,12 +57,45 @@ test("transpiler - let binding", async () => {
   expect(result.stdout).toContain('const message = "Hello World";');
 });
 
-test("transpiler - pipe expression", async () => {
+test("transpiler - pipe expression with method calls", async () => {
   const source = `"  hello  " |> trim |> toUpperCase`;
   
   const result = await transpileSource(source);
   expect(result.exitCode).toBe(0);
-  expect(result.stdout).toContain('"  hello  ".trim().toUpperCase()');
+  expect(result.stdout).toContain('(("  hello  ").trim()).toUpperCase()');
+});
+
+test("transpiler - pipe expression with console.log", async () => {
+  const source = `"Hello World" |> console.log`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('console.log("Hello World")');
+});
+
+test("transpiler - chained pipe with console.log", async () => {
+  const source = `"  hello  " |> trim |> toUpperCase |> console.log`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('console.log(((\"  hello  \").trim()).toUpperCase())');
+});
+
+test("transpiler - pipe with variable", async () => {
+  const source = `data |> console.log`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('console.log(data)');
+});
+
+test("transpiler - multiline with let and pipe", async () => {
+  const source = `let data = [1,2,3]; data |> console.log`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('const data = [1,2,3];');
+  expect(result.stdout).toContain('console.log(data)');
 });
 
 test("transpiler - atoms", async () => {

@@ -12,7 +12,7 @@ Zenoscript was created to bring functional programming concepts to the JavaScrip
 
 ### Is Zenoscript ready for production use?
 
-Zenoscript is currently in early development (v0.1.2). While you can experiment with it and provide feedback, we don't recommend using it for production applications yet. Stay tuned for stable releases.
+Zenoscript is currently in early development (v0.1.3). While you can experiment with it and provide feedback, we don't recommend using it for production applications yet. Stay tuned for stable releases.
 
 ## Technical Questions
 

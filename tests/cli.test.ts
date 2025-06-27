@@ -49,7 +49,10 @@ test("cli - help command", async () => {
   expect(result.stdout).toContain("init");
   expect(result.stdout).toContain("setup");
   expect(result.stdout).toContain("repl");
+  expect(result.stdout).toContain("-e <code>");
+  expect(result.stdout).toContain("Execute Zenoscript code inline");
   expect(result.stdout).toContain("Examples:");
+  expect(result.stdout).toContain('zeno -e \'"Hello" |> console.log\'');
 });
 
 test("cli - version command", async () => {
@@ -203,6 +206,48 @@ test("cli - error handling for missing file", async () => {
   const result = await runCli(["nonexistent.zs"]);
   expect(result.exitCode).not.toBe(0);
   // Should show some error about missing file
+});
+
+test("cli - execute inline code with -e", async () => {
+  const result = await runCli(["-e", '"Hello World" |> console.log']);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout.trim()).toBe("Hello World");
+});
+
+test("cli - execute inline let binding with -e", async () => {
+  const result = await runCli(["-e", 'let x = 42']);
+  expect(result.exitCode).toBe(0);
+  // Should execute without error (no output expected for let binding)
+});
+
+test("cli - execute inline atom with -e", async () => {
+  const result = await runCli(["-e", 'let status = :success']);
+  expect(result.exitCode).toBe(0);
+  // Should execute without error
+});
+
+test("cli - execute complex pipe chain with -e", async () => {
+  const result = await runCli(["-e", '"  hello world  " |> trim |> toUpperCase |> console.log']);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout.trim()).toBe("HELLO WORLD");
+});
+
+test("cli - execute multiline code with -e", async () => {
+  const result = await runCli(["-e", 'let data = [1,2,3]; data |> console.log']);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout.trim()).toBe("[ 1, 2, 3 ]");
+});
+
+test("cli - error handling for invalid code with -e", async () => {
+  const result = await runCli(["-e", 'invalid syntax here']);
+  expect(result.exitCode).not.toBe(0);
+  expect(result.stderr).toContain("error");
+});
+
+test("cli - missing code argument after -e", async () => {
+  const result = await runCli(["-e"]);
+  expect(result.exitCode).not.toBe(0);
+  // Should fail when no code is provided after -e
 });
 
 test("cli - build transpiler command", async () => {
