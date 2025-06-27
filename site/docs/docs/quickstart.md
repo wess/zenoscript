@@ -7,8 +7,8 @@ Get up and running with Zenoscript in just a few minutes! This guide will walk y
 Start by creating a new Zenoscript project:
 
 ```bash
-zeno init hello-zenoscript
-cd hello-zenoscript
+mkdir hello-zenoscript && cd hello-zenoscript
+zeno init
 ```
 
 This creates a basic project with:

@@ -1,12 +1,12 @@
 {
   "name": "zenoscript",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A functional programming language that compiles to TypeScript",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "type": "module",
   "bin": {
-    "zeno": "build/zeno"
+    "zeno": "src/index.ts"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -14,12 +14,17 @@
     "./preload": "./src/preload.ts"
   },
   "scripts": {
-    "build": "cd src/transpiler && make",
-    "clean": "cd src/transpiler && make clean && rm -rf build",
     "test": "bun test",
     "dev": "bun --hot src/index.ts",
     "example": "bun run examples/usage.ts",
-    "transpile": "bun src/index.ts"
+    "transpile": "bun src/index.ts",
+    "compile:linux-x64": "bun build --compile --target=bun-linux-x64 --outfile=build/linux-x64/zeno src/index.ts",
+    "compile:darwin-x64": "bun build --compile --target=bun-darwin-x64 --outfile=build/darwin-x64/zeno src/index.ts",
+    "compile:darwin-arm64": "bun build --compile --target=bun-darwin-arm64 --outfile=build/darwin-arm64/zeno src/index.ts",
+    "compile:windows-x64": "bun build --compile --target=bun-windows-x64 --outfile=build/windows-x64/zeno.exe src/index.ts",
+    "compile": "bun run compile:linux-x64 && bun run compile:darwin-x64 && bun run compile:darwin-arm64 && bun run compile:windows-x64",
+    "build": "bun run compile:darwin-arm64",
+    "clean": "rm -rf build"
   },
   "keywords": [
     "programming-language",

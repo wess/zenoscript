@@ -1,58 +1,15 @@
 import { test, expect } from "bun:test";
-import { spawn } from "bun";
-import { join } from "path";
-
-const TRANSPILER_DIR = join(import.meta.dir, "..", "src", "transpiler");
-const BUILD_DIR = join(import.meta.dir, "..", "build");
-const TRANSPILER_BINARY = join(BUILD_DIR, "zeno");
-
-async function buildIfNeeded() {
-  const binaryExists = await Bun.file(TRANSPILER_BINARY).exists();
-  
-  if (!binaryExists) {
-    console.log("Building transpiler for tests...");
-    const makeProcess = spawn({
-      cmd: ["make"],
-      cwd: TRANSPILER_DIR,
-      stdio: ["inherit", "inherit", "inherit"],
-    });
-    
-    const exitCode = await makeProcess.exited;
-    if (exitCode !== 0) {
-      throw new Error("Failed to build transpiler");
-    }
-  }
-}
+import { ZenoscriptTranspiler } from "../src/transpiler.ts";
 
 async function transpileSource(source: string) {
-  await buildIfNeeded();
+  const transpiler = new ZenoscriptTranspiler({ verbose: false, debug: false });
   
-  // Write test source to temp file
-  const tempFile = `/tmp/test_${Date.now()}.zs`;
-  await Bun.write(tempFile, source);
-  
-  // Run transpiler with timeout
-  const process = spawn({
-    cmd: [TRANSPILER_BINARY, tempFile],
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  
-  // Add timeout to prevent hanging
-  const timeout = setTimeout(() => {
-    process.kill();
-  }, 3000); // 3 second timeout
-  
-  const result = await process.exited;
-  clearTimeout(timeout);
-  
-  const stdout = await new Response(process.stdout).text();
-  const stderr = await new Response(process.stderr).text();
-  
-  // Cleanup
-  await Bun.$`rm -f ${tempFile}`;
-  
-  return { exitCode: result, stdout, stderr };
+  try {
+    const result = transpiler.transpile(source);
+    return { exitCode: 0, stdout: result, stderr: "" };
+  } catch (error) {
+    return { exitCode: 1, stdout: "", stderr: error.message };
+  }
 }
 
 test("transpiler - struct declaration", async () => {
@@ -132,7 +89,7 @@ test("transpiler - match expression", async () => {
   expect(result.stdout).toContain('return "Success";');
   expect(result.stdout).toContain('} else if (__match_value === Symbol.for("error"))');
   expect(result.stdout).toContain('return "Failed";');
-  expect(result.stdout).toContain("} else if (true)");
+  expect(result.stdout).toContain("} else {");
   expect(result.stdout).toContain('return "Unknown";');
 });
 

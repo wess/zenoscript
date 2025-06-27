@@ -2,45 +2,48 @@
 
 import { spawn } from "bun";
 import { join } from "path";
-
-const TRANSPILER_DIR = join(import.meta.dir, "transpiler");
-const BUILD_DIR = join(import.meta.dir, "..", "build");
-const TRANSPILER_BINARY = join(BUILD_DIR, "zeno");
-
-async function buildTranspiler() {
-  console.log("Building Zenoscript transpiler with tinycc...");
-  
-  const makeProcess = spawn({
-    cmd: ["make"],
-    cwd: TRANSPILER_DIR,
-    stdio: ["inherit", "inherit", "inherit"],
-  });
-  
-  const exitCode = await makeProcess.exited;
-  if (exitCode !== 0) {
-    console.error("Failed to build transpiler");
-    process.exit(1);
-  }
-  
-  console.log("Transpiler built successfully!");
-}
+import { ZenoscriptTranspiler } from "./transpiler.ts";
 
 async function runTranspiler(args: string[]) {
-  // Check if transpiler binary exists
-  const binaryExists = await Bun.file(TRANSPILER_BINARY).exists();
+  // Parse arguments
+  const verbose = args.includes('--verbose') || args.includes('-V');
+  const debug = args.includes('--debug') || args.includes('-d');
   
-  if (!binaryExists) {
-    await buildTranspiler();
+  const fileArgs = args.filter(arg => !arg.startsWith('-'));
+  const inputFile = fileArgs[0];
+  const outputFile = fileArgs[1];
+
+  if (!inputFile) {
+    console.error('Error: No input file specified');
+    console.error("Try 'zeno --help' for more information.");
+    process.exit(1);
   }
+
+  // Check if input file exists
+  const inputExists = await Bun.file(inputFile).exists();
+  if (!inputExists) {
+    console.error(`Error: Input file '${inputFile}' not found`);
+    process.exit(1);
+  }
+
+  const transpiler = new ZenoscriptTranspiler({ verbose, debug });
   
-  // Run the transpiler with the provided arguments
-  const transpilerProcess = spawn({
-    cmd: [TRANSPILER_BINARY, ...args],
-    stdio: ["inherit", "inherit", "inherit"],
-  });
-  
-  const exitCode = await transpilerProcess.exited;
-  process.exit(exitCode);
+  try {
+    const source = await Bun.file(inputFile).text();
+    const result = transpiler.transpile(source);
+    
+    if (outputFile) {
+      await Bun.write(outputFile, result);
+      if (verbose) {
+        console.log(`Output written to '${outputFile}'`);
+      }
+    } else {
+      console.log(result);
+    }
+  } catch (error) {
+    console.error('Transpilation failed:', error.message);
+    process.exit(1);
+  }
 }
 
 async function initProject() {
@@ -154,6 +157,8 @@ async function startRepl() {
   console.log("Starting Zenoscript REPL...");
   console.log("Type 'exit' or press Ctrl+C to quit\n");
   
+  const transpiler = new ZenoscriptTranspiler({ debug: false });
+  
   const readline = require("readline");
   const rl = readline.createInterface({
     input: process.stdin,
@@ -177,39 +182,19 @@ async function startRepl() {
     }
     
     try {
-      // Create a temporary file with the input
-      const tempFile = `/tmp/zenoscript_repl_${Date.now()}.zs`;
-      await Bun.write(tempFile, trimmed);
+      // Transpile the input
+      const typescript = transpiler.transpile(trimmed);
+      console.log("→", typescript.trim());
       
-      // Transpile and execute
-      const transpilerProcess = spawn({
-        cmd: [TRANSPILER_BINARY, tempFile],
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      
-      const exitCode = await transpilerProcess.exited;
-      
-      if (exitCode === 0) {
-        const typescript = await new Response(transpilerProcess.stdout).text();
-        console.log("→", typescript.trim());
-        
-        // Execute the TypeScript
-        try {
-          const result = eval(typescript);
-          if (result !== undefined) {
-            console.log(result);
-          }
-        } catch (execError) {
-          console.error("Execution error:", execError.message);
+      // Execute the TypeScript
+      try {
+        const result = eval(typescript);
+        if (result !== undefined) {
+          console.log(result);
         }
-      } else {
-        const stderr = await new Response(transpilerProcess.stderr).text();
-        console.error("Error:", stderr);
+      } catch (execError) {
+        console.error("Execution error:", execError.message);
       }
-      
-      // Cleanup
-      await Bun.$`rm -f ${tempFile}`;
     } catch (error) {
       console.error("REPL error:", error.message);
     }
@@ -244,7 +229,6 @@ Options:
   --version, -v          Show version
   --verbose, -V          Verbose output
   --debug, -d            Debug output
-  --build                Build transpiler from source
 
 Examples:
   zeno init              # Initialize new project
@@ -257,13 +241,28 @@ Examples:
   }
   
   if (args.includes("--version") || args.includes("-v")) {
-    const version = await Bun.file(join(import.meta.dir, "..", "VERSION")).text();
-    console.log(`Zenoscript v${version.trim()}`);
-    return;
-  }
-  
-  if (args.includes("--build")) {
-    await buildTranspiler();
+    let version = "0.0.2"; // fallback version
+    
+    // Try to read VERSION file from different possible locations
+    const possiblePaths = [
+      join(import.meta.dir, "..", "VERSION"),  // development
+      join(process.cwd(), "VERSION"),          // current directory
+      "VERSION",                               // relative to current directory
+    ];
+    
+    for (const path of possiblePaths) {
+      try {
+        const file = Bun.file(path);
+        if (await file.exists()) {
+          version = (await file.text()).trim();
+          break;
+        }
+      } catch (error) {
+        // Continue to next path
+      }
+    }
+    
+    console.log(`Zenoscript v${version}`);
     return;
   }
   
@@ -279,12 +278,6 @@ Examples:
       await startRepl();
       break;
     default:
-      // Check if transpiler binary exists
-      const binaryExists = await Bun.file(TRANSPILER_BINARY).exists();
-      if (!binaryExists) {
-        await buildTranspiler();
-      }
-      
       // Pass all arguments to the transpiler
       await runTranspiler(args);
       break;

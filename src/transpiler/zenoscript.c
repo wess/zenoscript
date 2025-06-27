@@ -164,24 +164,52 @@ void zenoscript_print_ast(const char* source) {
 }
 
 void zenoscript_print_version(void) {
-    printf("Zenoscript %s\n", ZENOSCRIPT_VERSION);
+    char version[32];
+    strcpy(version, ZENOSCRIPT_VERSION); // fallback version
+    
+    // List of possible paths to the VERSION file
+    const char* possible_paths[] = {
+        "VERSION",           // Current directory
+        "../VERSION",        // One level up
+        "../../VERSION",     // Two levels up  
+        "../../../VERSION",  // Three levels up (from build/transpiler to project root)
+        NULL
+    };
+    
+    // Try each path until we find the VERSION file
+    for (int i = 0; possible_paths[i] != NULL; i++) {
+        FILE* version_file = fopen(possible_paths[i], "r");
+        if (version_file) {
+            if (fgets(version, sizeof(version), version_file)) {
+                // Remove trailing newline if present
+                char* newline = strchr(version, '\n');
+                if (newline) {
+                    *newline = '\0';
+                }
+            }
+            fclose(version_file);
+            break;
+        }
+    }
+    
+    printf("Zenoscript %s\n", version);
     printf("A functional programming language that compiles to TypeScript\n");
 }
 
 void zenoscript_print_help(void) {
-    printf("Zeno - Functional Programming Language Transpiler\n\n");
+    printf("Zeno - Functional Programming Language Transpiler (Core Binary)\n\n");
     printf("USAGE:\n");
     printf("    zeno [OPTIONS] <input-file> [output-file]\n\n");
     printf("OPTIONS:\n");
     printf("    -h, --help       Show this help message\n");
     printf("    -v, --version    Show version information\n");
     printf("    -V, --verbose    Enable verbose output\n");
-    printf("    -d, --debug      Enable debug output (show AST)\n");
-    printf("    --tokens         Print tokens and exit\n");
-    printf("    --ast            Print AST and exit\n\n");
+    printf("    -d, --debug      Enable debug output (show AST)\n\n");
     printf("EXAMPLES:\n");
     printf("    zeno main.zs               # Output to stdout\n");
     printf("    zeno main.zs main.ts       # Output to file\n");
-    printf("    zeno --debug main.zs       # Show AST and output\n");
-    printf("    zeno --tokens main.zs      # Show tokens only\n");
+    printf("    zeno --debug main.zs       # Show AST and output\n\n");
+    printf("NOTE:\n");
+    printf("    This is the core transpiler binary. For full CLI features including\n");
+    printf("    project management (init, setup, repl), use the main 'zeno' command.\n");
 }

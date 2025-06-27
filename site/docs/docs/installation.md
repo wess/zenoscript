@@ -51,11 +51,21 @@ npm install -g zenoscript
 
 Download the appropriate binary for your platform from the [GitHub releases page](https://github.com/zenoscript/zenoscript/releases):
 
-- **macOS**: `zenoscript-macos.tar.gz`
-- **Linux**: `zenoscript-linux.tar.gz`  
-- **Windows**: `zenoscript-windows.zip`
+- **Linux x64**: `zenoscript-linux-x64.tar.gz`
+- **macOS x64 (Intel)**: `zenoscript-darwin-x64.tar.gz`
+- **macOS ARM64 (Apple Silicon)**: `zenoscript-darwin-arm64.tar.gz`
+- **Windows x64**: `zenoscript-windows-x64.zip`
 
-Extract and add the `bin` directory to your PATH.
+Extract and add the binary to your PATH:
+
+```bash
+# Linux/macOS
+tar -xzf zenoscript-*.tar.gz
+sudo mv */zeno /usr/local/bin/
+
+# Windows
+# Extract zip and add zeno.exe to your PATH
+```
 
 ## Verify Installation
 
@@ -68,7 +78,7 @@ zeno --version
 You should see output like:
 
 ```
-Zenoscript v0.0.1
+Zenoscript v0.0.2
 ```
 
 ## Create Your First Project
@@ -76,9 +86,11 @@ Zenoscript v0.0.1
 Use the `init` command to create a new Zenoscript project:
 
 ```bash
-# Create a new project
-zeno init my-zenoscript-app
-cd my-zenoscript-app
+# Create a new project directory
+mkdir my-zenoscript-app && cd my-zenoscript-app
+
+# Initialize the project
+zeno init
 
 # Install dependencies
 bun install
@@ -135,7 +147,7 @@ This will:
 If you prefer manual setup, add this to your `bunfig.toml`:
 
 ```toml
-preload = ["zenoscript/preload"]
+preload = ["zenoscript/plugin"]
 
 [plugins]
 zenoscript = "zenoscript/plugin"

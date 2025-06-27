@@ -13,21 +13,8 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            artifact-name: zenoscript-linux
-            build-target: linux
-          - os: windows-latest
-            artifact-name: zenoscript-windows
-            build-target: windows
-          - os: macos-latest
-            artifact-name: zenoscript-macos
-            build-target: macos
+    name: Build Cross-Platform Binaries
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -38,71 +25,53 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install C compiler (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: msys2/setup-msys2@v2
-        with:
-          msys: mingw64
-          install: mingw-w64-x86_64-gcc
-
-      - name: Install C compiler (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          xcode-select --install || true
-
-      - name: Install C compiler (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-
       - name: Install dependencies
         run: bun install
 
-      - name: Build project (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: msys2 {0}
+      - name: Run tests
+        run: bun test
+
+      - name: Build all platforms
+        run: bun run compile
+
+      - name: Prepare release assets
         run: |
-          mkdir -p build
-          cd src/transpiler
-          gcc -Wall -std=c99 -o ../../build/zeno.exe ./lexer.c ./ast.c ./parser.c ./codegen.c ./zenoscript.c ./cli.c
+          mkdir -p release-assets
+          
+          # Linux x64
+          mkdir -p release-assets/linux-x64
+          cp build/linux-x64/zeno release-assets/linux-x64/
+          cp README.md LICENSE VERSION release-assets/linux-x64/ 2>/dev/null || true
+          cd release-assets && tar -czf zenoscript-linux-x64.tar.gz linux-x64/ && cd ..
+          
+          # macOS x64 (Intel)
+          mkdir -p release-assets/darwin-x64
+          cp build/darwin-x64/zeno release-assets/darwin-x64/
+          cp README.md LICENSE VERSION release-assets/darwin-x64/ 2>/dev/null || true
+          cd release-assets && tar -czf zenoscript-darwin-x64.tar.gz darwin-x64/ && cd ..
+          
+          # macOS ARM64 (Apple Silicon)
+          mkdir -p release-assets/darwin-arm64
+          cp build/darwin-arm64/zeno release-assets/darwin-arm64/
+          cp README.md LICENSE VERSION release-assets/darwin-arm64/ 2>/dev/null || true
+          cd release-assets && tar -czf zenoscript-darwin-arm64.tar.gz darwin-arm64/ && cd ..
+          
+          # Windows x64
+          mkdir -p release-assets/windows-x64
+          cp build/windows-x64/zeno.exe release-assets/windows-x64/
+          cp README.md LICENSE VERSION release-assets/windows-x64/ 2>/dev/null || true
+          cd release-assets && zip -r zenoscript-windows-x64.zip windows-x64/ && cd ..
+          
+          # List all created assets
+          ls -la release-assets/
 
-      - name: Build project (Unix)
-        if: matrix.os != 'windows-latest'
-        run: bun run build
-
-      - name: Create executable package
-        shell: bash
-        run: |
-          mkdir -p dist
-          if [ -d "build" ]; then
-            cp -r build/* dist/ 2>/dev/null || true
-          fi
-          cp package.json dist/ 2>/dev/null || true
-          cp README.md dist/ 2>/dev/null || true
-          cp LICENSE dist/ 2>/dev/null || true
-          ls -la dist/
-
-      - name: Create archive (Unix)
-        if: matrix.os != 'windows-latest'
-        run: |
-          cd dist
-          tar -czf ../${{ matrix.artifact-name }}.tar.gz *
-
-      - name: Create archive (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd dist
-          7z a ../${{ matrix.artifact-name }}.zip *
-
-      - name: Upload artifact
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
+          name: zenoscript-binaries
           path: |
-            ${{ matrix.artifact-name }}.tar.gz
-            ${{ matrix.artifact-name }}.zip
-          if-no-files-found: ignore
+            release-assets/*.tar.gz
+            release-assets/*.zip
 
   release:
     name: Create Release
@@ -129,17 +98,11 @@ jobs:
           git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.version }}"
           git push origin "${{ steps.version.outputs.tag }}"
 
-      - name: Download all artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
-
-      - name: Prepare release assets
-        run: |
-          mkdir -p release-assets
-          find artifacts -name "*.tar.gz" -exec cp {} release-assets/ \;
-          find artifacts -name "*.zip" -exec cp {} release-assets/ \;
-          ls -la release-assets/
+          name: zenoscript-binaries
+          path: release-assets
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -149,15 +112,43 @@ jobs:
           body: |
             ## Release ${{ steps.version.outputs.version }}
             
-            This release includes builds for:
-            - Linux (zenoscript-linux.tar.gz)
-            - macOS (zenoscript-macos.tar.gz)  
-            - Windows (zenoscript-windows.zip)
+            Zenoscript is a functional programming language that compiles to TypeScript. This release includes standalone binaries for all major platforms.
+            
+            ### Download
+            - **Linux x64**: `zenoscript-linux-x64.tar.gz`
+            - **macOS x64 (Intel)**: `zenoscript-darwin-x64.tar.gz`
+            - **macOS ARM64 (Apple Silicon)**: `zenoscript-darwin-arm64.tar.gz`
+            - **Windows x64**: `zenoscript-windows-x64.zip`
             
             ### Installation
             1. Download the appropriate archive for your platform
-            2. Extract the archive
-            3. Add the extracted directory to your PATH
+            2. Extract the archive: 
+               - Linux/macOS: `tar -xzf zenoscript-*.tar.gz`
+               - Windows: Extract the zip file
+            3. Add the extracted directory to your PATH or copy the binary to a directory in your PATH
+            4. Run `zeno --help` to get started
+            
+            ### Quick Start
+            ```bash
+            # Initialize a new project
+            zeno init
+            
+            # Setup Zenoscript in existing project  
+            zeno setup
+            
+            # Start interactive REPL
+            zeno repl
+            
+            # Transpile a file
+            zeno input.zs output.ts
+            ```
+            
+            ### Features
+            - **Standalone binaries**: No runtime dependencies required
+            - **Cross-platform**: Linux, macOS, Windows support
+            - **Full CLI**: Project management, REPL, transpilation
+            - **Functional programming**: Structs, traits, pattern matching, pipe operators
+            - **TypeScript output**: Compile to readable TypeScript code
             
             ### Changes
             See the commit history for details about changes in this release.

@@ -1,12 +1,15 @@
 # CLI Reference
 
-The Zenoscript CLI (`zeno`) provides everything you need to develop, build, and manage Zenoscript projects.
+The Zenoscript CLI (`zeno`) provides everything you need to develop, build, and manage Zenoscript projects. Built with Bun and TypeScript, it offers fast transpilation and seamless project management.
 
 ## Installation
 
 ```bash
-# Install globally
+# Install globally with Bun (recommended)
 bun install -g zenoscript
+
+# Or download standalone binary
+curl -fsSL https://zenoscript.dev/install.sh | sh
 
 # Verify installation
 zeno --version
@@ -19,19 +22,20 @@ zeno --version
 Initialize a new Zenoscript project with recommended structure and configuration.
 
 ```bash
-zeno init my-project
+zeno init
 ```
 
-**Options:**
-- Creates `package.json` with Zenoscript dependencies
-- Sets up `bunfig.toml` with plugin configuration
-- Creates sample `index.zs` file
+**What it creates:**
+- `package.json` with Zenoscript dependencies and scripts
+- `bunfig.toml` with plugin configuration  
+- Sample `index.zs` file with example code
 - Automatically runs `zeno setup`
 
 **Example:**
 ```bash
-zeno init my-web-app
-cd my-web-app
+mkdir my-web-app && cd my-web-app
+zeno init
+bun install
 bun dev
 ```
 
@@ -50,7 +54,7 @@ zeno setup
 
 **Manual bunfig.toml setup:**
 ```toml
-preload = ["zenoscript/preload"]
+preload = ["zenoscript/plugin"]
 
 [plugins]
 zenoscript = "zenoscript/plugin"
@@ -66,22 +70,27 @@ zeno repl
 
 **Features:**
 - Real-time compilation and execution
-- Syntax highlighting
-- Error display
+- TypeScript output preview
+- Error display with helpful messages
 - Command history
+- Built-in TypeScript transpiler
 
 **Example session:**
 ```
 zs> let x = 42
 → const x = 42;
+42
 
-zs> match :success { :success => "It worked!" }
+zs> match :success { :success => "It worked!", _ => "Failed" }
 → (() => {
   const __match_value = Symbol.for("success");
   if (__match_value === Symbol.for("success")) {
     return "It worked!";
+  } else {
+    return "Failed";
   }
 })()
+"It worked!"
 
 zs> exit
 Goodbye!
@@ -98,8 +107,9 @@ zeno input.zs
 # Transpile to specific file
 zeno input.zs output.ts
 
-# Transpile multiple files
-zeno src/*.zs
+# With options
+zeno --verbose input.zs
+zeno --debug input.zs
 ```
 
 **Example:**
@@ -110,6 +120,10 @@ echo 'let greeting = "Hello, World!"' > hello.zs
 # Transpile it
 zeno hello.zs
 # Output: const greeting = "Hello, World!";
+
+# With TypeScript output
+zeno hello.zs hello.ts
+# Creates hello.ts with transpiled code
 ```
 
 ## Global Options
@@ -129,7 +143,7 @@ Display the current Zenoscript version.
 
 ```bash
 zeno --version
-# Output: Zenoscript v0.0.1
+# Output: Zenoscript v0.0.2
 ```
 
 ### `--verbose, -V`
@@ -142,18 +156,10 @@ zeno --verbose input.zs
 
 ### `--debug, -d`
 
-Enable debug mode with additional diagnostics.
+Enable debug mode with additional diagnostics and AST output.
 
 ```bash
 zeno --debug input.zs
-```
-
-### `--build`
-
-Force rebuild of the transpiler from source.
-
-```bash
-zeno --build
 ```
 
 ## Integration with Bun
@@ -203,15 +209,10 @@ Configure the Bun plugin for automatic `.zs` file handling:
 
 ```toml
 # Enable Zenoscript plugin
-preload = ["zenoscript/preload"]
+preload = ["zenoscript/plugin"]
 
 [plugins]
 zenoscript = "zenoscript/plugin"
-
-# Optional: configure transpiler options
-[zenoscript]
-target = "es2022"
-strict = true
 ```
 
 ### `tsconfig.json`
@@ -272,46 +273,19 @@ zeno --help  # shows available options
 - Check [GitHub Issues](https://github.com/zenoscript/zenoscript/issues) for known problems
 - Join our [Discord](https://discord.gg/zenoscript) for community support
 
-## Environment Variables
+## Performance
 
-### `ZENOSCRIPT_DEBUG`
+The Zenoscript CLI is built with Bun and TypeScript for optimal performance:
 
-Enable debug mode globally:
+- **Fast startup**: Sub-100ms command execution
+- **Efficient transpilation**: Direct TypeScript generation without intermediate steps  
+- **Built-in caching**: Automatic dependency resolution
+- **Cross-platform**: Runs natively on Linux, macOS, and Windows
 
-```bash
-export ZENOSCRIPT_DEBUG=1
-zeno input.zs  # Will show debug output
-```
+## Distribution
 
-### `ZENOSCRIPT_TARGET`
+Zenoscript CLI is distributed as:
 
-Set default compilation target:
-
-```bash
-export ZENOSCRIPT_TARGET=es2020
-zeno input.zs
-```
-
-## Shell Completion
-
-### Bash
-
-Add to your `.bashrc`:
-
-```bash
-eval "$(zeno completion bash)"
-```
-
-### Zsh
-
-Add to your `.zshrc`:
-
-```bash
-eval "$(zeno completion zsh)"
-```
-
-### Fish
-
-```fish
-zeno completion fish | source
-```
+- **npm/Bun packages**: `zenoscript` package for global installation
+- **Standalone binaries**: Platform-specific executables requiring no runtime
+- **Source builds**: Direct compilation from TypeScript source

@@ -32,6 +32,7 @@ logs/
 .temp/
 *.tmp
 *.temp
+.envrc
 
 # Test coverage
 coverage/
