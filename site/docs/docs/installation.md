@@ -111,17 +111,51 @@ my-zenoscript-app/
 
 ## IDE Setup
 
-### VS Code
+### VS Code Extension
 
-Install the Zenoscript extension for syntax highlighting and language support:
+Zenoscript provides a dedicated VSCode extension with full language support. You can install it in several ways:
+
+#### Method 1: From GitHub Releases (Recommended)
+
+1. Go to the [GitHub releases page](https://github.com/wess/zenocode/releases)
+2. Download the latest `zenoscript-*.vsix` file
+3. Install using VSCode command line:
+   ```bash
+   code --install-extension zenoscript-*.vsix
+   ```
+4. Or install through VSCode UI:
+   - Open VSCode
+   - Go to Extensions (Ctrl+Shift+X)
+   - Click the "..." menu → "Install from VSIX..."
+   - Select the downloaded `.vsix` file
+
+#### Method 2: VSCode Marketplace (Coming Soon)
 
 ```bash
 code --install-extension zenoscript.vscode-zenoscript
 ```
 
+#### Extension Features
+
+The VSCode extension provides:
+
+- **Syntax Highlighting** - Full syntax highlighting for `.zs` files
+- **Language Configuration** - Bracket matching, auto-closing pairs, comments
+- **Document Formatting** - Basic code formatting support
+- **File Association** - Automatic recognition of `.zs` files
+- **Error Detection** - Integration with Zenoscript transpiler
+
+#### Configuration
+
+Once installed, the extension automatically:
+- Associates `.zs` files with Zenoscript language
+- Provides syntax highlighting for Zenoscript keywords, operators, and constructs
+- Enables proper commenting with `//` and `/* */`
+- Sets up bracket matching and auto-closing pairs
+
 ### Other Editors
 
-For other editors, you can use the TypeScript language server since Zenoscript compiles to TypeScript.
+For other editors, you can use the TypeScript language server since Zenoscript compiles to TypeScript. Basic syntax highlighting can be achieved by associating `.zs` files with TypeScript syntax.
 
 ## Project Integration
 

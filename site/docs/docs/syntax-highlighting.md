@@ -34,18 +34,46 @@ let result = users
 
 ## VS Code
 
-Install the Zenoscript extension for full language support:
+The official Zenoscript VSCode extension provides comprehensive language support.
+
+### Installation
+
+#### From GitHub Releases (Recommended)
+
+1. Download the latest `zenoscript-*.vsix` file from [GitHub releases](https://github.com/wess/zenocode/releases)
+2. Install via command line:
+   ```bash
+   code --install-extension zenoscript-*.vsix
+   ```
+3. Or through VSCode UI: Extensions → "..." → "Install from VSIX..."
+
+#### From Marketplace (Coming Soon)
 
 ```bash
 code --install-extension zenoscript.vscode-zenoscript
 ```
 
-Features:
-- Syntax highlighting
-- Error checking
-- Auto-completion
-- Code snippets
-- Go to definition
+### Features
+
+The VSCode extension includes:
+
+- **Syntax Highlighting** - Complete highlighting for all Zenoscript constructs
+- **Language Configuration** - Bracket matching, auto-closing pairs, comments
+- **Document Formatting** - Basic code formatting and indentation
+- **File Association** - Automatic `.zs` file recognition
+- **Language Server Integration** - Error checking and IntelliSense (planned)
+
+### Supported Syntax
+
+The extension highlights:
+
+- **Keywords**: `fn`, `let`, `const`, `struct`, `trait`, `impl`, `match`, `if`, `else`, etc.
+- **Types**: `int`, `float`, `string`, `bool`, `void`, `any`, custom types
+- **Operators**: `+`, `-`, `*`, `/`, `==`, `!=`, `|>`, `<|`, `->`, `=>`
+- **Literals**: Numbers (decimal, hex, binary, octal), strings, booleans
+- **Comments**: `//` line comments and `/* */` block comments
+- **Functions**: Function names and calls
+- **Symbols**: Atom syntax `:symbol` (planned)
 
 ## Other Editors
 
