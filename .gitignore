@@ -36,7 +36,9 @@ logs/
 # Test coverage
 coverage/
 *.lcov
-
+CLAUDE.md
+llm_language_spec.txt
+.claude
 # Examples compiled output
 examples/*.ts
 !examples/react-components.ts

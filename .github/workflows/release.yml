@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    paths:
+      - 'VERSION'
   workflow_dispatch:
 
 jobs:
@@ -33,21 +35,50 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install C compiler (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          msys: mingw64
+          install: mingw-w64-x86_64-gcc
+
+      - name: Install C compiler (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          xcode-select --install || true
+
+      - name: Install C compiler (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
       - name: Install dependencies
         run: bun install
 
-      - name: Build project
+      - name: Build project (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          mkdir -p build
+          cd src/transpiler
+          gcc -Wall -std=c99 -o ../../build/zeno.exe ./lexer.c ./ast.c ./parser.c ./codegen.c ./zenoscript.c ./cli.c
+
+      - name: Build project (Unix)
+        if: matrix.os != 'windows-latest'
         run: bun run build
 
       - name: Create executable package
         shell: bash
         run: |
           mkdir -p dist
-          cp -r build/* dist/ 2>/dev/null || true
-          cp -r src dist/ 2>/dev/null || true
-          cp package.json dist/
+          if [ -d "build" ]; then
+            cp -r build/* dist/ 2>/dev/null || true
+          fi
+          cp package.json dist/ 2>/dev/null || true
           cp README.md dist/ 2>/dev/null || true
           cp LICENSE dist/ 2>/dev/null || true
+          ls -la dist/
 
       - name: Create archive (Unix)
         if: matrix.os != 'windows-latest'
@@ -74,7 +105,7 @@ jobs:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'VERSION')
 
     steps:
       - name: Checkout code
@@ -86,6 +117,14 @@ jobs:
           VERSION=$(cat VERSION | tr -d '\n\r')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        if: contains(github.event.head_commit.modified, 'VERSION')
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.version }}"
+          git push origin "${{ steps.version.outputs.tag }}"
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
