@@ -8,6 +8,9 @@ on:
       - 'VERSION'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build ${{ matrix.os }}
