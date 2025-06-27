@@ -287,7 +287,7 @@ let length = (list) => match list {
 Ready for more advanced examples? Check out:
 
 - [Advanced Examples](/examples/advanced) - Complex patterns and techniques
-- [Web Development](/examples/web) - Building web applications
+- [Concurrent Programming](/examples/advanced#concurrent-programming) - Async patterns
 - [Language Guide](/docs/syntax) - Complete syntax reference
 
 Try these examples in the [REPL](/docs/repl) to see them in action!

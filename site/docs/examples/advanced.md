@@ -487,6 +487,6 @@ These advanced patterns demonstrate Zenoscript's power for building complex, mai
 
 ## Next Steps
 
-- Explore [Web Development Examples](/examples/web)
 - Read the [Language Reference](/docs/syntax)
+- Check out [Basic Examples](/examples/basic)
 - Join the [Community Discord](https://discord.gg/zenoscript)

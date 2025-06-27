@@ -61,7 +61,8 @@ export default defineConfig({
           items: [
             { text: 'CLI', link: '/docs/cli' },
             { text: 'REPL', link: '/docs/repl' },
-            { text: 'Bun Integration', link: '/docs/bun' }
+            { text: 'Bun Integration', link: '/docs/bun' },
+            { text: 'FAQ', link: '/docs/faq' }
           ]
         }
       ],

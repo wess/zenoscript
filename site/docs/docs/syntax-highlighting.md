@@ -65,7 +65,7 @@ Use the TypeScript syntax as a base and add custom rules for Zenoscript-specific
 
 Configure typescript-mode for `.zs` files:
 
-```elisp
+```lisp
 (add-to-list 'auto-mode-alist '("\\.zs\\'" . typescript-mode))
 ```
 

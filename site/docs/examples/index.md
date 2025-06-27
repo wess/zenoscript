@@ -14,7 +14,7 @@ Advanced functional programming patterns and techniques.
 
 ### 🌐 Web Development
 Building web applications with Zenoscript and modern frameworks.
-[View Example →](/examples/web)
+[View Example →](/examples/advanced#concurrent-programming)
 
 ## Code Snippets
 
@@ -217,4 +217,4 @@ Have a great Zenoscript example? We'd love to feature it!
 3. Include documentation and tests
 4. Submit a pull request
 
-See our [Contributing Guide](/contributing) for details.
+See our [GitHub Repository](https://github.com/zenoscript/zenoscript) for details.

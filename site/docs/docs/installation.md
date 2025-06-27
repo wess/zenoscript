@@ -167,4 +167,4 @@ If the Bun plugin isn't working:
 
 - Check the [GitHub Issues](https://github.com/zenoscript/zenoscript/issues)
 - Join our [Discord community](https://discord.gg/zenoscript)
-- Read the [FAQ](/docs/faq)
+- Read the [Documentation](/docs/)
