@@ -28,7 +28,7 @@ export default defineConfig({
       { text: 'Examples', link: '/examples/' },
       { text: 'Blog', link: '/blog/' },
       { 
-        text: 'v0.0.1',
+        text: 'v0.1.2',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' }

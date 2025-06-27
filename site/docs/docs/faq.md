@@ -12,7 +12,7 @@ Zenoscript was created to bring functional programming concepts to the JavaScrip
 
 ### Is Zenoscript ready for production use?
 
-Zenoscript is currently in early development (v0.0.1). While you can experiment with it and provide feedback, we don't recommend using it for production applications yet. Stay tuned for stable releases.
+Zenoscript is currently in early development (v0.1.2). While you can experiment with it and provide feedback, we don't recommend using it for production applications yet. Stay tuned for stable releases.
 
 ## Technical Questions
 
@@ -35,15 +35,15 @@ Yes! Zenoscript is designed to interoperate seamlessly with TypeScript and JavaS
 ### What runtime environments does Zenoscript support?
 
 Zenoscript supports all environments where TypeScript/JavaScript runs:
-- Node.js
+- Bun (recommended)
 - Browsers
 - Deno
-- Bun
+- Node.js (legacy support)
 - And any other JavaScript runtime
 
 ### Does Zenoscript have its own package manager?
 
-No, Zenoscript uses the existing npm/yarn/pnpm ecosystem for package management. You can use any npm package in your Zenoscript code.
+No, Zenoscript uses the existing Bun ecosystem for package management. You can use any package in your Zenoscript code.
 
 ## Language Features
 

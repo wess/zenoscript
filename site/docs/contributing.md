@@ -19,7 +19,7 @@ If you find a bug, please create an issue on our [GitHub repository](https://git
 - Expected behavior
 - Actual behavior
 - Any relevant code snippets or error messages
-- Your environment (OS, Node.js version, etc.)
+- Your environment (OS, Bun version, etc.)
 
 ### Suggesting Enhancements
 
@@ -62,17 +62,17 @@ To set up your development environment:
 
 2. Install dependencies:
    ```bash
-   npm install
+   bun install
    ```
 
 3. Build the project:
    ```bash
-   npm run build
+   bun run build
    ```
 
 4. Run tests:
    ```bash
-   npm test
+   bun test
    ```
 
 ## Project Structure

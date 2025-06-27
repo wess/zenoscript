@@ -8,7 +8,7 @@ The Zenoscript CLI (`zeno`) provides everything you need to develop, build, and 
 # Install globally with Bun (recommended)
 bun install -g zenoscript
 
-# Or download standalone binary
+# Or use our install script
 curl -fsSL https://zenoscript.dev/install.sh | sh
 
 # Verify installation
@@ -143,7 +143,7 @@ Display the current Zenoscript version.
 
 ```bash
 zeno --version
-# Output: Zenoscript v0.0.2
+# Output: Zenoscript v0.1.2
 ```
 
 ### `--verbose, -V`
@@ -229,7 +229,7 @@ Zenoscript respects TypeScript configuration:
     "types": ["bun-types"]
   },
   "include": ["**/*.ts", "**/*.zs"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"]  # Standard excludes
 }
 ```
 
@@ -286,6 +286,6 @@ The Zenoscript CLI is built with Bun and TypeScript for optimal performance:
 
 Zenoscript CLI is distributed as:
 
-- **npm/Bun packages**: `zenoscript` package for global installation
+- **Bun packages**: `zenoscript` package for global installation
 - **Standalone binaries**: Platform-specific executables requiring no runtime
 - **Source builds**: Direct compilation from TypeScript source

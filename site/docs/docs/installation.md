@@ -1,10 +1,10 @@
 # Installation
 
-Zenoscript can be installed globally using Bun or npm, and works seamlessly with existing TypeScript projects.
+Zenoscript can be installed globally using Bun, and works seamlessly with existing TypeScript projects.
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) (recommended) or Node.js 16+
+- [Bun](https://bun.sh) (recommended)
 - Basic familiarity with command line
 
 ## Install Zenoscript
@@ -41,10 +41,10 @@ These scripts will:
 bun install -g zenoscript
 ```
 
-#### Using npm
+#### Alternative Method (Legacy)
 
 ```bash
-npm install -g zenoscript
+bun install -g zenoscript
 ```
 
 #### Manual Installation
@@ -78,7 +78,7 @@ zeno --version
 You should see output like:
 
 ```
-Zenoscript v0.0.2
+Zenoscript v0.1.2
 ```
 
 ## Create Your First Project
@@ -197,15 +197,15 @@ Now that you have Zenoscript installed, check out the [Quick Start Guide](/docs/
 
 If you get a "command not found" error:
 
-1. Make sure Bun or npm's global bin directory is in your PATH
+1. Make sure Bun's global bin directory is in your PATH
 2. Try reinstalling Zenoscript
-3. For Bun users, ensure `~/.bun/bin` is in your PATH
+3. Ensure `~/.bun/bin` is in your PATH
 
 ### Plugin not working
 
 If the Bun plugin isn't working:
 
-1. Make sure you're using Bun (not Node.js)
+1. Make sure you're using Bun
 2. Check that `bunfig.toml` is properly configured
 3. Try running `zeno setup` again
 

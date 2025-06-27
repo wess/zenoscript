@@ -12,7 +12,7 @@ zeno repl
 
 # Alternative ways
 bun run zeno repl
-npx zenoscript repl
+bun x zenoscript repl
 ```
 
 You'll see the Zenoscript prompt:

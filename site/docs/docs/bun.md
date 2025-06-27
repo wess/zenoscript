@@ -70,7 +70,7 @@ hot = true
 
 # Install configuration
 [install]
-registry = "https://registry.npmjs.org"
+registry = "https://registry.npmjs.org"  # Compatible with npm registry
 lockfile = true
 ```
 
@@ -202,7 +202,7 @@ removeComments = false
 
 ## Performance Optimizations
 
-### Bun vs Node.js Performance
+### Bun vs Legacy Runtimes Performance
 
 ```zenoscript
 // benchmark.zs - Performance comparison
@@ -231,7 +231,7 @@ await benchmark("JSON parse", () => {
 ```
 
 Results typically show:
-- **File I/O**: 2-3x faster than Node.js
+- **File I/O**: 2-3x faster than legacy runtimes
 - **JSON operations**: 1.5-2x faster
 - **HTTP requests**: 2-4x faster
 - **Startup time**: 3-4x faster
@@ -252,7 +252,7 @@ let monitorMemory = () => {
   })
 }
 
-// Bun typically uses 30-50% less memory than Node.js
+// Bun typically uses 30-50% less memory than legacy runtimes
 ```
 
 ## Web Development
@@ -590,7 +590,7 @@ bun test --watch
 # Build optimized bundle
 bun build src/index.zs --outdir dist --minify --target bun
 
-# Build for Node.js compatibility
+# Build for legacy runtime compatibility
 bun build src/index.zs --outdir dist --target node
 
 # Build for browser
@@ -704,7 +704,7 @@ export let config = loadConfig()
 // Good - use Bun's optimized file API
 let content = await Bun.file("data.json").json()
 
-// Avoid - slower fs module
+// Avoid - slower legacy fs module
 import { readFileSync } from "fs"
 let content = JSON.parse(readFileSync("data.json", "utf8"))
 ```
@@ -769,8 +769,8 @@ rm -rf ~/.bun/install/cache
 # Check for large dependencies
 bun pm ls
 
-# Use Bun's faster package manager
-rm package-lock.json yarn.lock
+# Use Bun's package manager
+rm package-lock.json yarn.lock pnpm-lock.yaml
 bun install
 ```
 
