@@ -1,0 +1,42 @@
+{
+  "name": "zenoscript",
+  "version": "0.0.1",
+  "description": "A functional programming language that compiles to TypeScript",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "zeno": "build/zeno"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./plugin": "./src/plugin.ts",
+    "./preload": "./src/preload.ts"
+  },
+  "scripts": {
+    "build": "cd src/transpiler && make",
+    "clean": "cd src/transpiler && make clean && rm -rf build",
+    "test": "bun test",
+    "dev": "bun --hot src/index.ts",
+    "example": "bun run examples/usage.ts",
+    "transpile": "bun src/index.ts"
+  },
+  "keywords": [
+    "programming-language",
+    "transpiler",
+    "functional-programming",
+    "typescript",
+    "compiler"
+  ],
+  "author": "Zenoscript Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+# Bun configuration for Zenoscript
+[bunfig]
+# Auto-load the Zenoscript plugin
+preload = ["./src/preload.ts"]
+
+# Optional: Add file extensions
+[build]
+# Recognize .zs files
+extensions = [".zs", ".ts", ".tsx", ".js", ".jsx"]

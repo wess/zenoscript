@@ -1,0 +1,126 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact-name: zenoscript-linux
+            build-target: linux
+          - os: windows-latest
+            artifact-name: zenoscript-windows
+            build-target: windows
+          - os: macos-latest
+            artifact-name: zenoscript-macos
+            build-target: macos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build project
+        run: bun run build
+
+      - name: Create executable package
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp -r build/* dist/ 2>/dev/null || true
+          cp -r src dist/ 2>/dev/null || true
+          cp package.json dist/
+          cp README.md dist/ 2>/dev/null || true
+          cp LICENSE dist/ 2>/dev/null || true
+
+      - name: Create archive (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd dist
+          tar -czf ../${{ matrix.artifact-name }}.tar.gz *
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd dist
+          7z a ../${{ matrix.artifact-name }}.zip *
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: |
+            ${{ matrix.artifact-name }}.tar.gz
+            ${{ matrix.artifact-name }}.zip
+          if-no-files-found: ignore
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read VERSION file
+        id: version
+        run: |
+          VERSION=$(cat VERSION | tr -d '\n\r')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          find artifacts -name "*.tar.gz" -exec cp {} release-assets/ \;
+          find artifacts -name "*.zip" -exec cp {} release-assets/ \;
+          ls -la release-assets/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Release ${{ steps.version.outputs.version }}
+            
+            This release includes builds for:
+            - Linux (zenoscript-linux.tar.gz)
+            - macOS (zenoscript-macos.tar.gz)  
+            - Windows (zenoscript-windows.zip)
+            
+            ### Installation
+            1. Download the appropriate archive for your platform
+            2. Extract the archive
+            3. Add the extracted directory to your PATH
+            
+            ### Changes
+            See the commit history for details about changes in this release.
+          files: release-assets/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

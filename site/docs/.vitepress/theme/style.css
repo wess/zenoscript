@@ -1,0 +1,234 @@
+/* Custom styles for Zenoscript site */
+
+/* Install command styling */
+.install-commands {
+  background: linear-gradient(135deg, rgba(189, 52, 254, 0.1), rgba(71, 202, 255, 0.1));
+  border: 1px solid rgba(189, 52, 254, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+/* Custom install tabs component */
+.install-tabs {
+  background: linear-gradient(135deg, rgba(189, 52, 254, 0.05), rgba(71, 202, 255, 0.05));
+  border: 1px solid rgba(189, 52, 254, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+
+.install-tabs .tabs {
+  background: rgba(189, 52, 254, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.install-tabs .tabs button {
+  transition: all 0.2s ease;
+}
+
+.install-tabs .tabs button:hover {
+  background: rgba(189, 52, 254, 0.1);
+}
+
+.install-tabs .tabs button.active {
+  background: rgba(189, 52, 254, 0.15);
+  color: #bd34fe;
+}
+
+.install-commands .vp-code-group {
+  margin: 0;
+}
+
+.install-commands .vp-code-group .tabs {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 8px 8px 0 0;
+}
+
+/* Hero gradient enhancements */
+.VPHome .VPHero .name {
+  background: linear-gradient(120deg, #bd34fe 30%, #41d1ff 70%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Feature cards */
+.VPFeatures .VPFeature {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.VPFeatures .VPFeature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(189, 52, 254, 0.1);
+}
+
+/* Code block enhancements */
+.vp-code-group {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Copy button styling */
+.vp-copy {
+  background: rgba(189, 52, 254, 0.1);
+  border: 1px solid rgba(189, 52, 254, 0.2);
+  transition: all 0.2s ease;
+}
+
+.vp-copy:hover {
+  background: rgba(189, 52, 254, 0.2);
+  border-color: rgba(189, 52, 254, 0.4);
+}
+
+/* Highlight install commands */
+.quick-install {
+  background: linear-gradient(135deg, rgba(189, 52, 254, 0.05), rgba(71, 202, 255, 0.05));
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+  border: 1px solid rgba(189, 52, 254, 0.1);
+}
+
+.quick-install h2 {
+  margin-top: 0;
+  color: #bd34fe;
+  font-weight: 600;
+}
+
+/* Button styling */
+.vp-button {
+  transition: all 0.2s ease;
+}
+
+.vp-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(189, 52, 254, 0.3);
+}
+
+/* Dark mode adjustments */
+.dark .install-commands {
+  background: linear-gradient(135deg, rgba(189, 52, 254, 0.15), rgba(71, 202, 255, 0.15));
+  border-color: rgba(189, 52, 254, 0.3);
+}
+
+.dark .quick-install {
+  background: linear-gradient(135deg, rgba(189, 52, 254, 0.1), rgba(71, 202, 255, 0.1));
+  border-color: rgba(189, 52, 254, 0.2);
+}
+
+/* Custom syntax highlighting for Zenoscript-specific features */
+.language-typescript .line {
+  position: relative;
+}
+
+/* Highlight atoms (:symbol) */
+.language-typescript .line:has-text(":") {
+  /* This would need JavaScript to work properly */
+}
+
+/* Add custom styling for common Zenoscript patterns */
+.vp-code-group .language-typescript code {
+  font-family: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+}
+
+/* Style pipe operators */
+.vp-code code .token.operator {
+  color: #bd34fe;
+  font-weight: 600;
+}
+
+/* Style struct keyword (when not highlighted by TS) */
+.vp-code code .token.keyword {
+  color: #bd34fe;
+}
+
+/* Style Zenoscript-specific syntax */
+.token.zenoscript-atom {
+  color: #f97316 !important;
+  font-weight: 500;
+}
+
+.token.keyword.zenoscript {
+  color: #bd34fe !important;
+  font-weight: 600;
+}
+
+.token.operator.pipe {
+  color: #bd34fe !important;
+  font-weight: 700;
+}
+
+.token.wildcard {
+  color: #8b5cf6 !important;
+  font-weight: 600;
+}
+
+/* Dark mode adjustments for syntax highlighting */
+.dark .token.zenoscript-atom {
+  color: #fb923c !important;
+}
+
+.dark .token.keyword.zenoscript {
+  color: #c084fc !important;
+}
+
+.dark .token.operator.pipe {
+  color: #c084fc !important;
+}
+
+.dark .token.wildcard {
+  color: #a78bfa !important;
+}
+
+/* Logo styling */
+.VPNav .VPNavBar .logo {
+  max-height: 32px;
+  width: auto;
+}
+
+.VPNavBarTitle .logo {
+  height: 32px;
+  width: auto;
+  margin-right: 8px;
+}
+
+/* Hero image styling */
+.VPHero .VPImage {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.VPHero .VPImage img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 32px rgba(189, 52, 254, 0.2));
+}
+
+/* Make the mascot more prominent on mobile */
+@media (max-width: 640px) {
+  .VPHero .VPImage {
+    max-width: 240px;
+  }
+  
+  .VPNav .VPNavBar .logo {
+    max-height: 28px;
+  }
+}
+
+/* Dark mode logo adjustments */
+.dark .VPHero .VPImage img {
+  filter: drop-shadow(0 8px 32px rgba(189, 52, 254, 0.3));
+}
+
+/* Ensure the logo is visible and properly sized */
+.VPNavBarTitle .title {
+  display: flex;
+  align-items: center;
+}
+
+.VPNavBarTitle .logo + .text {
+  margin-left: 8px;
+}
