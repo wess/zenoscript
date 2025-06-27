@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+!out/**/*.js
+node_modules/**
+*.vsix
+bun.lock
+.envrc
+zenoscript_mascot.svg
+convert-icon.js
