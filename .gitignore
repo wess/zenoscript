@@ -2,6 +2,7 @@
 node_modules/
 bun.lock
 bun.lockb
+*.vsix
 
 # Build outputs
 dist/
