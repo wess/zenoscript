@@ -26,6 +26,7 @@ export default defineConfig({
     nav: [
       { text: 'Docs', link: '/docs/' },
       { text: 'Examples', link: '/examples/' },
+      { text: 'Blog', link: '/blog/' },
       { 
         text: 'v0.1.2',
         items: [
@@ -73,6 +74,14 @@ export default defineConfig({
             { text: 'Basic Usage', link: '/examples/basic' },
             { text: 'Advanced', link: '/examples/advanced' },
             { text: 'Web Development', link: '/examples/web' }
+          ]
+        }
+      ],
+      '/blog/': [
+        {
+          text: 'Blog',
+          items: [
+            { text: 'Introducing Zenoscript', link: '/blog/introducing-zenoscript' }
           ]
         }
       ]
