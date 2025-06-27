@@ -26,7 +26,6 @@ export default defineConfig({
     nav: [
       { text: 'Docs', link: '/docs/' },
       { text: 'Examples', link: '/examples/' },
-      { text: 'Blog', link: '/blog/' },
       { 
         text: 'v0.1.2',
         items: [
