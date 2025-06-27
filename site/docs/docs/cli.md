@@ -270,7 +270,7 @@ zeno --help  # shows available options
 ### Getting Help
 
 - Use `--help` with any command for detailed usage
-- Check [GitHub Issues](https://github.com/zenoscript/zenoscript/issues) for known problems
+- Check [GitHub Issues](https://github.com/wess/zenoscript/issues) for known problems
 - Join our [Discord](https://discord.gg/zenoscript) for community support
 
 ## Performance

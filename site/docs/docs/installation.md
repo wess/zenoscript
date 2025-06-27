@@ -49,7 +49,7 @@ bun install -g zenoscript
 
 #### Manual Installation
 
-Download the appropriate binary for your platform from the [GitHub releases page](https://github.com/zenoscript/zenoscript/releases):
+Download the appropriate binary for your platform from the [GitHub releases page](https://github.com/wess/zenoscript/releases):
 
 - **Linux x64**: `zenoscript-linux-x64.tar.gz`
 - **macOS x64 (Intel)**: `zenoscript-darwin-x64.tar.gz`
@@ -211,6 +211,6 @@ If the Bun plugin isn't working:
 
 ### Getting Help
 
-- Check the [GitHub Issues](https://github.com/zenoscript/zenoscript/issues)
+- Check the [GitHub Issues](https://github.com/wess/zenoscript/issues)
 - Join our [Discord community](https://discord.gg/zenoscript)
 - Read the [Documentation](/docs/)

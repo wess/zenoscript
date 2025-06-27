@@ -173,7 +173,7 @@ Future development includes:
 
 Zenoscript is open source. You can contribute by:
 
-- **GitHub**: [zenoscript/zenoscript](https://github.com/zenoscript/zenoscript) - Report bugs, request features, or contribute code
+- **GitHub**: [wess/zenoscript](https://github.com/wess/zenoscript) - Report bugs, request features, or contribute code
 - **VS Code Extension**: Available for download from our releases page
 - **Documentation**: Help us improve our guides and examples
 - **Community**: Share your projects and get help

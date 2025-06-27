@@ -113,7 +113,7 @@ You can customize these in your editor's theme configuration.
 Help improve Zenoscript syntax highlighting:
 
 1. [VS Code Extension](https://github.com/zenoscript/vscode-zenoscript)
-2. [Language Grammar](https://github.com/zenoscript/zenoscript-tmgrammar)
+2. [Language Grammar](https://github.com/wess/zenoscript-tmgrammar)
 3. [Editor Plugins](https://github.com/zenoscript/editor-plugins)
 
 ## Language Server

@@ -14,7 +14,7 @@ hero:
       link: /docs/
     - theme: alt
       text: View on GitHub
-      link: https://github.com/zenoscript/zenoscript
+      link: https://github.com/wess/zenoscript
 
 features:
   - icon: ⚡

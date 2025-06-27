@@ -12,7 +12,7 @@ There are many ways to contribute to Zenoscript:
 
 ### Reporting Bugs
 
-If you find a bug, please create an issue on our [GitHub repository](https://github.com/zenoscript/zenoscript/issues) with the following information:
+If you find a bug, please create an issue on our [GitHub repository](https://github.com/wess/zenoscript/issues) with the following information:
 
 - A clear, descriptive title
 - Steps to reproduce the issue
@@ -56,7 +56,7 @@ To set up your development environment:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/zenoscript/zenoscript.git
+   git clone https://github.com/wess/zenoscript.git
    cd zenoscript
    ```
 

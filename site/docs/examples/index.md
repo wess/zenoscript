@@ -204,7 +204,7 @@ let result = some(42)
 
 Check out more examples from the community:
 
-- [GitHub Repository Examples](https://github.com/zenoscript/zenoscript/tree/main/examples)
+- [GitHub Repository Examples](https://github.com/wess/zenoscript/tree/main/examples)
 - [Community Showcase](https://github.com/zenoscript/awesome-zenoscript)
 - [Tutorial Projects](https://github.com/zenoscript/learn-zenoscript)
 
@@ -212,9 +212,9 @@ Check out more examples from the community:
 
 Have a great Zenoscript example? We'd love to feature it!
 
-1. Fork the [repository](https://github.com/zenoscript/zenoscript)
+1. Fork the [repository](https://github.com/wess/zenoscript)
 2. Add your example to `examples/`
 3. Include documentation and tests
 4. Submit a pull request
 
-See our [GitHub Repository](https://github.com/zenoscript/zenoscript) for details.
+See our [GitHub Repository](https://github.com/wess/zenoscript) for details.

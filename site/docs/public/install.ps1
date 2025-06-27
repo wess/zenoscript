@@ -23,7 +23,7 @@ Write-Host ""
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-$ZenoscriptRepo = "zenoscript/zenoscript"
+$ZenoscriptRepo = "wess/zenoscript"
 $BinDir = Join-Path $InstallDir "bin"
 $Platform = "windows"
 

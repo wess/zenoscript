@@ -77,7 +77,7 @@ We welcome contributions! See our [Contributing Guide](/contributing) for detail
 
 - Join our [Community Discord](https://discord.gg/zenoscript)
 - Check the [documentation](/docs/)
-- Ask questions on [GitHub Discussions](https://github.com/zenoscript/zenoscript/discussions)
+- Ask questions on [GitHub Discussions](https://github.com/wess/zenoscript/discussions)
 
 ### Is there a REPL for Zenoscript?
 

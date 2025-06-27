@@ -28,7 +28,7 @@ echo -e "${PURPLE}Fast functional programming for TypeScript${NC}"
 echo
 
 # Configuration
-ZENOSCRIPT_REPO="zenoscript/zenoscript"
+ZENOSCRIPT_REPO="wess/zenoscript"
 INSTALL_DIR="$HOME/.zenoscript"
 BIN_DIR="$HOME/.zenoscript/bin"
 VERSION="latest"

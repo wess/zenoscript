@@ -75,4 +75,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-For the complete list of changes, see the [commit history](https://github.com/zenoscript/zenoscript/commits/main) on GitHub.
+For the complete list of changes, see the [commit history](https://github.com/wess/zenoscript/commits/main) on GitHub.

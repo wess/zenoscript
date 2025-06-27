@@ -88,7 +88,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/zenoscript/zenoscript' }
+      { icon: 'github', link: 'https://github.com/wess/zenoscript' }
     ],
 
     footer: {
@@ -97,7 +97,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/zenoscript/zenoscript/edit/main/site/docs/:path'
+      pattern: 'https://github.com/wess/zenoscript/edit/main/site/docs/:path'
     },
 
     search: {
