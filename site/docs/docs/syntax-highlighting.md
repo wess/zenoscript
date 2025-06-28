@@ -40,7 +40,7 @@ The official Zenoscript VSCode extension provides comprehensive language support
 
 #### From GitHub Releases (Recommended)
 
-1. Download the latest `zenoscript-*.vsix` file from [GitHub releases](https://github.com/wess/zenocode/releases)
+1. Download the latest `zenoscript-*.vsix` file from [GitHub releases](https://github.com/wess/zenoscript/releases)
 2. Install via command line:
    ```bash
    code --install-extension zenoscript-*.vsix
@@ -112,9 +112,9 @@ You can customize these in your editor's theme configuration.
 
 Help improve Zenoscript syntax highlighting:
 
-1. [VS Code Extension](https://github.com/zenoscript/vscode-zenoscript)
-2. [Language Grammar](https://github.com/wess/zenoscript-tmgrammar)
-3. [Editor Plugins](https://github.com/zenoscript/editor-plugins)
+1. [VS Code Extension](https://github.com/wess/zenoscript/tree/main/vscode)
+2. [Language Grammar](https://github.com/wess/zenoscript/tree/main/vscode/syntaxes)
+3. [Main Repository](https://github.com/wess/zenoscript)
 
 ## Language Server
 

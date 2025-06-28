@@ -205,8 +205,7 @@ let result = some(42)
 Check out more examples from the community:
 
 - [GitHub Repository Examples](https://github.com/wess/zenoscript/tree/main/examples)
-- [Community Showcase](https://github.com/zenoscript/awesome-zenoscript)
-- [Tutorial Projects](https://github.com/zenoscript/learn-zenoscript)
+- [Community Showcase](https://github.com/wess/awesome-zenoscript)
 
 ## Contributing Examples
 
