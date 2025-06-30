@@ -14,15 +14,21 @@ zeno init
 This creates a basic project with:
 
 ```zenoscript
-// index.zs
-const greet = (name: string) => `Hello, ${name}!`;
+// index.zs - Notice the clean syntax!
+const greet = (name: string) => { `Hello, ${name}!` }
 
 const main = () => {
-  console.log(greet("World"));
-};
+  console.log greet("World")  // Optional parentheses
+  greet("World") |> console.log  // Using pipe operator
+}
 
-main();
+main()
 ```
+
+**Key features shown:**
+- **Automatic returns**: Functions return their last expression
+- **Optional parentheses**: Clean function calls without parentheses
+- **Pipe operations**: Chain function calls elegantly
 
 ## Run Your Program
 
@@ -60,14 +66,14 @@ let users = [
   { id: 3, name: "Charlie", email: "charlie@example.com", status: :pending }
 ]
 
-// Filter active users using pipe operations
+// Filter active users using pipe operations and optional parentheses
 let activeUsers = users
   |> filter(user => user.status === :active)
   |> map(user => user.name)
 
-console.log("Active users:", activeUsers)
+console.log "Active users:", activeUsers  // Optional parentheses
 
-// Pattern matching for user status
+// Pattern matching with automatic return
 let getStatusMessage = (status) => match status {
   :active => "User is active"
   :inactive => "User is inactive"
@@ -75,16 +81,45 @@ let getStatusMessage = (status) => match status {
   _ => "Unknown status"
 }
 
-// Display status for each user
+// Display status for each user - showcasing clean syntax
 users |> forEach(user => {
-  let message = getStatusMessage(user.status)
-  console.log(`${user.name}: ${message}`)
+  let message = getStatusMessage user.status  // Optional parentheses
+  console.log `${user.name}: ${message}`     // Optional parentheses
 })
+
+// Functions with automatic return
+let isActiveUser = (user) => { user.status === :active }
+let getUserName = (user) => { user.name }
+let formatUserInfo = (user) => {
+  let status = getStatusMessage user.status
+  let activity = isActiveUser(user) ? "✓" : "✗"
+  `${activity} ${user.name} (${status})`  // Automatically returned
+}
 ```
 
 ## Key Concepts Demonstrated
 
-### 1. Structs
+### 1. Optional Parentheses
+Clean, readable function calls:
+
+```zenoscript
+console.log "Hello"        // vs console.log("Hello")
+processValue 42            // vs processValue(42)
+validateInput userData     // vs validateInput(userData)
+```
+
+### 2. Automatic Returns
+Functions return their last expression:
+
+```zenoscript
+let add = (a, b) => { a + b }  // No return needed
+let greet = (name) => {
+  let message = `Hello, ${name}!`
+  message  // Automatically returned
+}
+```
+
+### 3. Structs
 Define structured data types:
 
 ```zenoscript
@@ -95,7 +130,7 @@ struct User {
 }
 ```
 
-### 2. Atoms
+### 4. Atoms
 Type-safe constants using the `:` syntax:
 
 ```zenoscript

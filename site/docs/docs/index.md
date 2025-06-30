@@ -13,6 +13,39 @@ Zenoscript is designed to make functional programming accessible and practical f
 
 ## Key Features
 
+### Optional Parentheses
+
+Clean, readable function calls inspired by functional languages:
+
+```zenoscript
+// Function calls without parentheses
+console.log "Hello, World!"
+processValue 42
+validateInput userData
+
+// Compiles to clean TypeScript
+console.log("Hello, World!");
+processValue(42);
+validateInput(userData);
+```
+
+### Optional Return Statements
+
+Functions automatically return their last expression:
+
+```zenoscript
+// Concise function definitions
+let add = (a, b) => { a + b }
+let multiply = (x, y) => { x * y }
+
+// Multi-statement functions
+let processUser = (user) => {
+  let validated = validateUser(user)
+  let normalized = normalizeData(validated)
+  normalized  // Automatically returned
+}
+```
+
 ### Pattern Matching
 
 ```zenoscript

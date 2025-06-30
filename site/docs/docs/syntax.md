@@ -84,6 +84,96 @@ let message = match status {
 }
 ```
 
+## Function Call Syntax
+
+### Optional Parentheses
+
+Zenoscript supports optional parentheses for function calls, inspired by functional languages like Elixir:
+
+```zenoscript
+// Traditional function calls
+console.log("Hello")
+processValue(42)
+validateInput(userData)
+
+// Optional parentheses syntax
+console.log "Hello"
+processValue 42
+validateInput userData
+
+// Works with different argument types
+myFunction "string argument"
+calculate 3.14
+handleUser userObject
+processArray [1, 2, 3]
+
+// Multiple arguments still require parentheses
+add(5, 10)  // Multiple args need parentheses
+```
+
+**Smart keyword detection** ensures control flow statements work correctly:
+
+```zenoscript
+// Keywords are preserved
+if condition { doSomething() }
+let value = expression
+return result
+
+// Compiles correctly to:
+if (condition) { doSomething(); }
+const value = expression;
+return result;
+```
+
+### Function Return Statements
+
+Functions automatically return their last expression, eliminating boilerplate:
+
+```zenoscript
+// Concise single-expression functions
+let add = (a, b) => { a + b }
+let square = (x) => { x * x }
+let greet = (name) => { `Hello, ${name}!` }
+
+// Multi-statement functions with automatic return
+let processUser = (user) => {
+  let validated = validateUser(user)
+  let normalized = normalizeData(validated)
+  let enriched = enrichUserData(normalized)
+  enriched  // Automatically returned
+}
+
+// Explicit returns still work
+let explicitReturn = (x) => {
+  if (x < 0) {
+    return "negative"
+  }
+  return "positive"
+}
+
+// Mixed statements with automatic return
+let complexFunction = (data) => {
+  console.log("Processing data...")
+  let result = processData(data)
+  console.log("Processing complete")
+  result  // This gets returned automatically
+}
+```
+
+**Compiles to TypeScript with explicit returns:**
+
+```typescript
+const add = (a, b) => { return a + b };
+const square = (x) => { return x * x };
+
+const processUser = (user) => {
+  const validated = validateUser(user);
+  const normalized = normalizeData(validated);
+  const enriched = enrichUserData(normalized);
+  return enriched;
+};
+```
+
 ## Structs
 
 Define structured data types:

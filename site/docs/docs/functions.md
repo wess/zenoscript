@@ -7,26 +7,75 @@ Functions are first-class citizens in Zenoscript, designed with functional progr
 ### Basic Syntax
 
 ```zenoscript
-// Arrow function (preferred)
-let add = (a: number, b: number) => a + b
+// Arrow function with automatic return
+let add = (a: number, b: number) => { a + b }
 
-// Multi-line function
+// Multi-line function with optional return
 let greet = (name: string) => {
   let message = `Hello, ${name}!`
-  return message
+  message  // Automatically returned
 }
 
-// Function with type annotations
-let multiply = (x: number, y: number): number => {
-  return x * y
-}
+// Function with explicit type annotations
+let multiply = (x: number, y: number): number => { x * y }
 
 // No parameters
 let getCurrentTime = () => new Date()
 
-// Single parameter (parentheses optional)
-let square = x => x * x
-let double = (x) => x * 2
+// Traditional syntax still works
+let traditionalAdd = (a: number, b: number) => {
+  return a + b  // Explicit return
+}
+```
+
+### Optional Parentheses in Function Calls
+
+Zenoscript supports clean, readable function calls without parentheses:
+
+```zenoscript
+// Clean function calls
+console.log "Hello, World!"
+processValue 42
+validateInput userData
+handleResponse apiResponse
+
+// Traditional calls still work
+console.log("Hello, World!")
+processValue(42)
+
+// Multiple arguments require parentheses
+add(10, 20)
+createUser("Alice", 30, "alice@example.com")
+```
+
+### Automatic Return Statements
+
+Functions return their last expression automatically:
+
+```zenoscript
+// Single expression functions
+let square = (x) => { x * x }
+let isEven = (n) => { n % 2 === 0 }
+let capitalize = (str) => { str.charAt(0).toUpperCase() + str.slice(1) }
+
+// Multi-statement functions
+let processData = (input) => {
+  let cleaned = sanitizeInput(input)
+  let validated = validateData(cleaned)
+  let transformed = transformData(validated)
+  transformed  // Returned automatically
+}
+
+// Control flow with automatic return
+let getGrade = (score) => {
+  if (score >= 90) {
+    return "A"  // Explicit return for early exit
+  }
+  if (score >= 80) {
+    return "B"
+  }
+  "F"  // Automatic return for default case
+}
 ```
 
 ### Function Expressions
