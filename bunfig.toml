@@ -12,3 +12,8 @@ extensions = [".zs", ".ts", ".tsx", ".js", ".jsx"]
 [test]
 # Include .zs files in test pattern matching  
 preload = ["./src/preload.ts"]
+
+# Loader configuration
+[loader]
+# Treat .zs files as TypeScript files
+".zs" = "ts"

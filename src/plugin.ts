@@ -78,6 +78,29 @@ const zenoscriptPlugin = {
       }
     });
 
+    // Handle .zs files in zenoscript namespace (for proper resolution)
+    build.onLoad({ filter: /\.zs$/, namespace: "zenoscript" }, async (args) => {
+      const source = await Bun.file(args.path).text();
+
+      try {
+        const typescript = await transpileZenoscript(source, args.path);
+
+        return {
+          contents: typescript,
+          loader: "ts", // Treat output as TypeScript
+        };
+      } catch (error) {
+        return {
+          errors: [
+            {
+              text: `Zenoscript transpilation error: ${error.message}`,
+              location: { file: args.path },
+            },
+          ],
+        };
+      }
+    });
+
     // Handle .zs files as entry points
     build.onResolve({ filter: /\.zs$/ }, (args) => {
       return {
