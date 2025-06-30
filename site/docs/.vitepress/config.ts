@@ -28,7 +28,7 @@ export default defineConfig({
       { text: 'Examples', link: '/examples/' },
       { text: 'Blog', link: '/blog/' },
       { 
-        text: 'v0.1.3',
+        text: 'v0.1.4',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' }
@@ -81,6 +81,7 @@ export default defineConfig({
         {
           text: 'Blog',
           items: [
+            { text: 'Release 0.1.4: Security & Quality', link: '/blog/release-0-1-4' },
             { text: 'Introducing Zenoscript', link: '/blog/introducing-zenoscript' }
           ]
         }

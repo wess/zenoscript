@@ -143,7 +143,7 @@ Display the current Zenoscript version.
 
 ```bash
 zeno --version
-# Output: Zenoscript v0.1.3
+# Output: Zenoscript v0.1.4
 ```
 
 ### `--verbose, -V`

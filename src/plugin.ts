@@ -1,7 +1,7 @@
 import { plugin } from "bun";
 import { spawn } from "bun";
-import { join } from "path";
-import { existsSync } from "fs";
+import { join } from "node:path";
+import { existsSync } from "node:fs";
 
 const BUILD_DIR = join(import.meta.dir, "..", "build");
 const TRANSPILER_BINARY = join(BUILD_DIR, "zeno");
@@ -14,7 +14,7 @@ async function ensureTranspilerBuilt() {
       cwd: join(import.meta.dir, "transpiler"),
       stdio: ["inherit", "inherit", "inherit"],
     });
-    
+
     const exitCode = await makeProcess.exited;
     if (exitCode !== 0) {
       throw new Error("Failed to build Zenoscript transpiler");
@@ -22,13 +22,13 @@ async function ensureTranspilerBuilt() {
   }
 }
 
-async function transpileZenoscript(source: string, path: string): Promise<string> {
+async function transpileZenoscript(source: string, _path: string): Promise<string> {
   await ensureTranspilerBuilt();
-  
+
   // Write source to temp file
   const tempFile = `/tmp/zenoscript_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.zs`;
   await Bun.write(tempFile, source);
-  
+
   try {
     // Run transpiler
     const process = spawn({
@@ -36,14 +36,14 @@ async function transpileZenoscript(source: string, path: string): Promise<string
       stdout: "pipe",
       stderr: "pipe",
     });
-    
+
     const exitCode = await process.exited;
-    
+
     if (exitCode !== 0) {
       const stderr = await new Response(process.stderr).text();
       throw new Error(`Zenoscript transpilation failed: ${stderr}`);
     }
-    
+
     const typescript = await new Response(process.stdout).text();
     return typescript;
   } finally {
@@ -58,10 +58,10 @@ export const zenoscriptPlugin = plugin({
     // Handle .zs files for both bundling and loading
     build.onLoad({ filter: /\.zs$/ }, async (args) => {
       const source = await Bun.file(args.path).text();
-      
+
       try {
         const typescript = await transpileZenoscript(source, args.path);
-        
+
         return {
           contents: typescript,
           loader: "ts", // Treat output as TypeScript
@@ -88,7 +88,7 @@ export const zenoscriptPlugin = plugin({
 
     // Handle relative imports of .zs files
     build.onResolve({ filter: /^\..*\.zs$/ }, (args) => {
-      const path = require("path");
+      const path = require("node:path");
       const resolvedPath = path.resolve(args.resolveDir, args.path);
       return {
         path: resolvedPath,

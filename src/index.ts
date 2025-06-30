@@ -1,20 +1,20 @@
 #!/usr/bin/env bun
 
 import { spawn } from "bun";
-import { join } from "path";
+import { join } from "node:path";
 import { ZenoscriptTranspiler } from "./transpiler.ts";
 
 async function runTranspiler(args: string[]) {
   // Parse arguments
-  const verbose = args.includes('--verbose') || args.includes('-V');
-  const debug = args.includes('--debug') || args.includes('-d');
-  
-  const fileArgs = args.filter(arg => !arg.startsWith('-'));
+  const verbose = args.includes("--verbose") || args.includes("-V");
+  const debug = args.includes("--debug") || args.includes("-d");
+
+  const fileArgs = args.filter((arg) => !arg.startsWith("-"));
   const inputFile = fileArgs[0];
   const outputFile = fileArgs[1];
 
   if (!inputFile) {
-    console.error('Error: No input file specified');
+    console.error("Error: No input file specified");
     console.error("Try 'zeno --help' for more information.");
     process.exit(1);
   }
@@ -27,11 +27,11 @@ async function runTranspiler(args: string[]) {
   }
 
   const transpiler = new ZenoscriptTranspiler({ verbose, debug });
-  
+
   try {
     const source = await Bun.file(inputFile).text();
     const result = transpiler.transpile(source);
-    
+
     if (outputFile) {
       await Bun.write(outputFile, result);
       if (verbose) {
@@ -41,14 +41,14 @@ async function runTranspiler(args: string[]) {
       console.log(result);
     }
   } catch (error) {
-    console.error('Transpilation failed:', error.message);
+    console.error("Transpilation failed:", error.message);
     process.exit(1);
   }
 }
 
 async function initProject() {
   console.log("Initializing Zenoscript project...");
-  
+
   const packageJson = {
     name: "zenoscript-project",
     version: "1.0.0",
@@ -57,21 +57,21 @@ async function initProject() {
     scripts: {
       dev: "bun --hot index.zs",
       build: "bun build index.zs --outdir dist",
-      start: "bun dist/index.js"
+      start: "bun dist/index.js",
     },
     devDependencies: {
-      "@types/bun": "latest"
+      "@types/bun": "latest",
     },
     dependencies: {
-      zenoscript: "latest"
-    }
+      zenoscript: "latest",
+    },
   };
-  
-  const bunfig = {
+
+  const _bunfig = {
     preload: ["zenoscript/plugin"],
-    plugins: ["zenoscript/plugin"]
+    plugins: ["zenoscript/plugin"],
   };
-  
+
   const indexZs = `// Welcome to Zenoscript!
 // This is a functional programming language that compiles to TypeScript
 
@@ -86,13 +86,16 @@ main();
 
   try {
     await Bun.write("package.json", JSON.stringify(packageJson, null, 2));
-    await Bun.write("bunfig.toml", `preload = ["zenoscript/plugin"]
+    await Bun.write(
+      "bunfig.toml",
+      `preload = ["zenoscript/plugin"]
 
 [plugins]
 zenoscript = "zenoscript/plugin"
-`);
+`,
+    );
     await Bun.write("index.zs", indexZs);
-    
+
     console.log("✓ Created package.json");
     console.log("✓ Created bunfig.toml");
     console.log("✓ Created index.zs");
@@ -100,7 +103,7 @@ zenoscript = "zenoscript/plugin"
     console.log("1. Run 'bun install' to install dependencies");
     console.log("2. Run 'bun dev' to start development");
     console.log("3. Run 'bun build' to build for production");
-    
+
     // Auto-setup the plugin
     await setupPlugin();
   } catch (error) {
@@ -111,29 +114,32 @@ zenoscript = "zenoscript/plugin"
 
 async function setupPlugin() {
   console.log("Setting up Zenoscript plugin for Bun...");
-  
+
   try {
     const bunfigExists = await Bun.file("bunfig.toml").exists();
     const packageExists = await Bun.file("package.json").exists();
-    
+
     if (!bunfigExists) {
-      await Bun.write("bunfig.toml", `preload = ["zenoscript/plugin"]
+      await Bun.write(
+        "bunfig.toml",
+        `preload = ["zenoscript/plugin"]
 
 [plugins]
 zenoscript = "zenoscript/plugin"
-`);
+`,
+      );
       console.log("✓ Created bunfig.toml with Zenoscript plugin");
     } else {
       const bunfig = await Bun.file("bunfig.toml").text();
       if (!bunfig.includes("zenoscript")) {
-        const updated = bunfig + `\n[plugins]\nzenoscript = "zenoscript/plugin"\n`;
+        const updated = `${bunfig}\n[plugins]\nzenoscript = "zenoscript/plugin"\n`;
         await Bun.write("bunfig.toml", updated);
         console.log("✓ Updated bunfig.toml with Zenoscript plugin");
       } else {
         console.log("✓ Zenoscript plugin already configured in bunfig.toml");
       }
     }
-    
+
     if (packageExists) {
       const pkg = await Bun.file("package.json").json();
       if (!pkg.dependencies?.zenoscript && !pkg.devDependencies?.zenoscript) {
@@ -145,7 +151,7 @@ zenoscript = "zenoscript/plugin"
         await installProcess.exited;
       }
     }
-    
+
     console.log("✓ Zenoscript plugin setup complete!");
   } catch (error) {
     console.error("Failed to setup plugin:", error.message);
@@ -155,18 +161,23 @@ zenoscript = "zenoscript/plugin"
 
 async function executeInline(code: string) {
   const transpiler = new ZenoscriptTranspiler({ debug: false });
-  
+
   try {
     // Transpile the input
     const typescript = transpiler.transpile(code);
-    
-    // Execute the TypeScript - wrap in an IIFE for multiple statements
+
+    // Execute the TypeScript using Bun's safer execution
     try {
-      const wrappedCode = `(function() { ${typescript} })()`;
-      const result = eval(wrappedCode);
-      if (result !== undefined) {
-        console.log(result);
+      const tempFile = `/tmp/zenoscript_inline_${Date.now()}.ts`;
+      await Bun.write(tempFile, typescript);
+
+      const result = await import(tempFile);
+      if (result.default !== undefined) {
+        console.log(result.default);
       }
+
+      // Cleanup temp file
+      await Bun.$`rm -f ${tempFile}`;
     } catch (execError) {
       console.error("Execution error:", execError.message);
       process.exit(1);
@@ -180,52 +191,58 @@ async function executeInline(code: string) {
 async function startRepl() {
   console.log("Starting Zenoscript REPL...");
   console.log("Type 'exit' or press Ctrl+C to quit\n");
-  
+
   const transpiler = new ZenoscriptTranspiler({ debug: false });
-  
-  const readline = require("readline");
+
+  const readline = require("node:readline");
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: "zs> "
+    prompt: "zs> ",
   });
-  
+
   rl.prompt();
-  
+
   rl.on("line", async (input) => {
     const trimmed = input.trim();
-    
+
     if (trimmed === "exit" || trimmed === "quit") {
       rl.close();
       return;
     }
-    
+
     if (trimmed === "") {
       rl.prompt();
       return;
     }
-    
+
     try {
       // Transpile the input
       const typescript = transpiler.transpile(trimmed);
       console.log("→", typescript.trim());
-      
-      // Execute the TypeScript
+
+      // Execute the TypeScript using Bun's safer execution
       try {
-        const result = eval(typescript);
-        if (result !== undefined) {
-          console.log(result);
+        const tempFile = `/tmp/zenoscript_repl_${Date.now()}.ts`;
+        await Bun.write(tempFile, typescript);
+
+        const result = await import(tempFile);
+        if (result.default !== undefined) {
+          console.log(result.default);
         }
+
+        // Cleanup temp file
+        await Bun.$`rm -f ${tempFile}`;
       } catch (execError) {
         console.error("Execution error:", execError.message);
       }
     } catch (error) {
       console.error("REPL error:", error.message);
     }
-    
+
     rl.prompt();
   });
-  
+
   rl.on("close", () => {
     console.log("\nGoodbye!");
     process.exit(0);
@@ -235,19 +252,19 @@ async function startRepl() {
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
-  
+
   // Handle -e flag for inline execution
-  const evalIndex = args.indexOf('-e');
+  const evalIndex = args.indexOf("-e");
   if (evalIndex !== -1) {
     if (evalIndex + 1 >= args.length) {
-      console.error('Error: No code provided after -e flag');
+      console.error("Error: No code provided after -e flag");
       process.exit(1);
     }
     const code = args[evalIndex + 1];
     await executeInline(code);
     return;
   }
-  
+
   // Handle special commands
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
     console.log(`Zenoscript CLI
@@ -277,17 +294,17 @@ Examples:
 `);
     return;
   }
-  
+
   if (args.includes("--version") || args.includes("-v")) {
-    let version = "0.1.3"; // fallback version
-    
+    let version = "0.1.4"; // fallback version
+
     // Try to read VERSION file from different possible locations
     const possiblePaths = [
-      join(import.meta.dir, "..", "VERSION"),  // development
-      join(process.cwd(), "VERSION"),          // current directory
-      "VERSION",                               // relative to current directory
+      join(import.meta.dir, "..", "VERSION"), // development
+      join(process.cwd(), "VERSION"), // current directory
+      "VERSION", // relative to current directory
     ];
-    
+
     for (const path of possiblePaths) {
       try {
         const file = Bun.file(path);
@@ -295,15 +312,15 @@ Examples:
           version = (await file.text()).trim();
           break;
         }
-      } catch (error) {
+      } catch (_error) {
         // Continue to next path
       }
     }
-    
+
     console.log(`Zenoscript v${version}`);
     return;
   }
-  
+
   // Handle subcommands
   switch (command) {
     case "init":
