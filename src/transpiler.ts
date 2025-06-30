@@ -44,6 +44,15 @@ export class ZenoscriptTranspiler {
     
     // Transform atoms to symbols
     result = this.transformAtoms(result);
+    
+    // Transform simplified if statements (before optional parens)
+    result = this.transformSimplifiedIf(result);
+    
+    // Transform optional parentheses function calls
+    result = this.transformOptionalParens(result);
+    
+    // Transform optional return statements (must be last)
+    result = this.transformOptionalReturn(result);
 
     if (this.options.verbose) {
       console.log("Transpilation completed successfully");
@@ -148,30 +157,117 @@ export class ZenoscriptTranspiler {
         let result = '(() => {\n';
         result += `  const __match_value = ${variable};\n`;
         
-        let hasConditions = false;
-        
         for (let i = 0; i < caseLines.length; i++) {
           const caseLine = caseLines[i];
           const [pattern, action] = caseLine.split('=>').map(s => s.trim());
           
           if (pattern === '_') {
-            if (hasConditions) {
+            if (i > 0) {
               result += `  } else {\n`;
             } else {
-              result += `  if (true) {\n`;
+              result += `  {\n`;
             }
             result += `    return ${action};\n`;
           } else if (pattern.startsWith(':')) {
             const symbol = pattern.slice(1);
-            const condition = hasConditions ? '} else if' : 'if';
-            result += `  ${condition} (__match_value === Symbol.for("${symbol}")) {\n`;
+            if (i > 0) {
+              result += `  } else if (__match_value === Symbol.for("${symbol}")) {\n`;
+            } else {
+              result += `  if (__match_value === Symbol.for("${symbol}")) {\n`;
+            }
             result += `    return ${action};\n`;
-            hasConditions = true;
           }
         }
         
         result += '  }\n})()';
         return result;
+      }
+    );
+  }
+
+  private transformOptionalParens(source: string): string {
+    // Transform function calls without parentheses: myFunction x -> myFunction(x)
+    // But skip strings and other contexts where it shouldn't apply
+    
+    // Split on strings to avoid processing inside them
+    const parts = source.split(/("[^"]*"|'[^']*')/);
+    
+    for (let i = 0; i < parts.length; i += 2) { // Only process non-string parts
+      if (parts[i]) {
+        parts[i] = parts[i].replace(
+          /\b(\w+)\s+([a-zA-Z_$][\w$]*|\d+|\[[^\]]*\]|\{[^}]*\})(?=\s|$|;|\)|,)/g,
+          (match, funcName, arg) => {
+            // Don't transform known keywords or operators
+            const keywords = ['if', 'else', 'for', 'while', 'let', 'const', 'var', 'return', 'match', 'struct', 'trait', 'type', 'interface'];
+            if (keywords.includes(funcName)) {
+              return match;
+            }
+            return `${funcName}(${arg})`;
+          }
+        );
+      }
+    }
+    
+    // Now handle string arguments (which are preserved in the parts array)
+    let result = parts.join('');
+    
+    // Process function calls with string arguments that were split out
+    result = result.replace(
+      /\b(\w+)\s+("[^"]*"|'[^']*')(?=\s|$|;|\)|,)/g,
+      (match, funcName, stringArg) => {
+        const keywords = ['if', 'else', 'for', 'while', 'let', 'const', 'var', 'return', 'match', 'struct', 'trait', 'type', 'interface'];
+        if (keywords.includes(funcName)) {
+          return match;
+        }
+        return `${funcName}(${stringArg})`;
+      }
+    );
+    
+    return result;
+  }
+
+  private transformSimplifiedIf(source: string): string {
+    // Transform simplified if statements: if x == 1 { -> if (x == 1) {
+    // But avoid matching "return if" or other contexts
+    return source.replace(
+      /(?:^|\s)(if\s+)([^{]+)\s*\{/g,
+      (match, ifKeyword, condition) => {
+        const trimmedCondition = condition.trim();
+        // Only add parentheses if they're not already there
+        if (!trimmedCondition.startsWith('(') || !trimmedCondition.endsWith(')')) {
+          const leadingSpace = match.startsWith(' ') ? ' ' : '';
+          return `${leadingSpace}${ifKeyword}(${trimmedCondition}) {`;
+        }
+        return match;
+      }
+    );
+  }
+
+  private transformOptionalReturn(source: string): string {
+    // Transform functions to auto-return last expression
+    // Match function declarations and arrow functions
+    return source.replace(
+      /(function\s+\w+\([^)]*\)\s*\{|\([^)]*\)\s*=>\s*\{|=>\s*\{)([^}]+)\}/g,
+      (match, funcStart, body) => {
+        const lines = body.trim().split(';').filter(line => line.trim());
+        if (lines.length === 0) return match;
+        
+        const lastLine = lines[lines.length - 1].trim();
+        const otherLines = lines.slice(0, -1);
+        
+        // Don't add return if it already has one or if it's a control flow statement
+        if (lastLine.startsWith('return ') || lastLine.startsWith('if ') || lastLine.includes('if (')) {
+          return match;
+        }
+        
+        // Build the new function body
+        let newBody = '';
+        if (otherLines.length > 0) {
+          newBody = otherLines.join(';') + '; ';
+        }
+        newBody += `return ${lastLine}`;
+        
+        return `${funcStart} ${newBody} }`;
       }
     );
   }
