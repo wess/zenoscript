@@ -1,6 +1,6 @@
 {
   "name": "zenoscript",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A functional programming language that compiles to TypeScript",
   "main": "src/index.ts",
   "module": "src/index.ts",
