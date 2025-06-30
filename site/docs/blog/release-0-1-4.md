@@ -1,6 +1,6 @@
 # Zenoscript 0.1.4: Security Enhancements and Code Quality Improvements
 
-*Published: December 30, 2024*
+*Published: June 30, 2025*
 
 We're excited to announce **Zenoscript 0.1.4**, a focused release that significantly improves the security and code quality of the Zenoscript transpiler and CLI tools. This release addresses important security vulnerabilities while maintaining full backward compatibility.
 
