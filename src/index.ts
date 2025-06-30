@@ -296,7 +296,7 @@ Examples:
   }
 
   if (args.includes("--version") || args.includes("-v")) {
-    let version = "0.1.4"; // fallback version
+    let version = "0.1.5"; // fallback version
 
     // Try to read VERSION file from different possible locations
     const possiblePaths = [

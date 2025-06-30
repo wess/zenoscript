@@ -2,71 +2,24 @@
 
 // Generic container types
 struct Option<T> {
-  value: T?;
+  value: T;
   isSome: boolean;
 }
 
 struct Result<T, E> {
-  value: T?;
-  error: E?;
+  value: T;
+  error: E;
   isOk: boolean;
 }
 
-// Advanced traits
+// Advanced traits  
 trait Functor<T> {
-  map<U>(fn: (value: T) => U): Functor<U>;
+  map(fn: any): any;
 }
 
-trait Monad<T> extends Functor<T> {
-  flatMap<U>(fn: (value: T) => Monad<U>): Monad<U>;
-  unit<U>(value: U): Monad<U>;
-}
-
-// Complex implementations
-impl Functor<T> for Option<T> {
-  map<U>(fn: (value: T) => U) {
-    return match this.isSome {
-      true => Option.some(fn(this.value))
-      false => Option.none()
-    };
-  }
-}
-
-impl Monad<T> for Option<T> {
-  flatMap<U>(fn: (value: T) => Option<U>) {
-    return match this.isSome {
-      true => fn(this.value)
-      false => Option.none()
-    };
-  }
-  
-  unit<U>(value: U) {
-    return Option.some(value);
-  }
-}
-
-impl Option<T> {
-  some(value: T) {
-    return { value, isSome: true };
-  }
-  
-  none() {
-    return { value: null, isSome: false };
-  }
-  
-  unwrap() {
-    return match this.isSome {
-      true => this.value
-      false => panic("Called unwrap on None value")
-    };
-  }
-  
-  unwrapOr(defaultValue: T) {
-    return match this.isSome {
-      true => this.value
-      false => defaultValue
-    };
-  }
+trait Monad<T> {
+  flatMap(fn: any): any;
+  unit(value: any): any;
 }
 
 // State management with atoms
@@ -80,7 +33,7 @@ let stateTransition = match appState {
   _ => :error
 }
 
-// Complex data processing pipeline
+// Complex data processing 
 struct User {
   id: number;
   name: string;
@@ -93,67 +46,81 @@ struct ValidationError {
   message: string;
 }
 
-// Validation functions (would be implemented in TypeScript)
-let validateUser = (user: User) => {
-  let errors = []
-  
-  let nameValidation = match user.name.length {
-    0 => Option.some({ field: "name", message: "Name is required" })
-    len when len < 2 => Option.some({ field: "name", message: "Name too short" })
-    _ => Option.none()
-  }
-  
-  let emailValidation = match user.email.includes("@") {
-    false => Option.some({ field: "email", message: "Invalid email format" })
-    true => Option.none()
-  }
-  
-  return match [nameValidation, emailValidation] {
-    [none, none] => Result.ok(user)
-    errors => Result.error(errors.filter(e => e.isSome).map(e => e.unwrap()))
+// Create sample users
+let user1 = { id: 1, name: "Alice", email: "alice@example.com", isActive: true }
+let user2 = { id: 2, name: "Bob", email: "bob@test.org", isActive: false }
+let user3 = { id: 3, name: "", email: "invalid", isActive: true }
+
+// Pattern matching for validation
+let validateName = (name) => {
+  return match name.length {
+    0 => :invalid_empty
+    1 => :invalid_short
+    _ => :valid
   }
 }
 
-// Functional composition
-let processUsers = (users: User[]) => {
-  return users
-    |> filter(user => user.isActive)
-    |> map(validateUser)
-    |> filter(result => result.isOk)
-    |> map(result => result.unwrap())
-}
-
-// Pattern matching with complex conditions
-let categorizeUser = (user: User) => {
-  return match [user.isActive, user.email.endsWith(".com")] {
-    [true, true] => :premium
-    [true, false] => :standard
-    [false, _] => :inactive
+let validateEmail = (email) => {
+  return match email.includes("@") {
+    true => :valid
+    false => :invalid_format
   }
 }
 
-// Higher-order functions simulation
-struct Pipeline<T> {
-  value: T;
-}
-
-impl Pipeline<T> {
-  new(value: T) {
-    return { value };
-  }
+// User categorization
+let categorizeUser = (user) => {
+  let nameStatus = validateName user.name
+  let emailStatus = validateEmail user.email
   
-  then<U>(fn: (value: T) => U) {
-    return Pipeline.new(fn(this.value));
-  }
-  
-  execute() {
-    return this.value;
+  return match nameStatus {
+    :valid => match emailStatus {
+      :valid => :premium_user
+      _ => :standard_user
+    }
+    _ => :invalid_user
   }
 }
 
-// Usage example
-let result = Pipeline.new(42)
-  |> then(x => x * 2)
-  |> then(x => x + 10)
-  |> then(x => x.toString())
-  |> execute
+// Process multiple users
+let user1Category = categorizeUser user1
+let user2Category = categorizeUser user2  
+let user3Category = categorizeUser user3
+
+// Output results
+console.log "User categories:"
+console.log user1Category
+console.log user2Category
+console.log user3Category
+
+// Chained data transformations
+let data = "zenoscript programming"
+let processed = data |> toUpperCase |> trim |> console.log
+
+// State transitions
+let currentState = :idle
+let nextState = match currentState {
+  :idle => :loading
+  :loading => :processing  
+  :processing => :complete
+  :complete => :idle
+  _ => :error
+}
+
+console.log "State transition:"
+console.log nextState
+
+// Complex matching with multiple atoms
+let systemStatus = :healthy
+let userLoad = :medium
+
+let recommendation = match systemStatus {
+  :healthy => match userLoad {
+    :low => :scale_down
+    :medium => :maintain
+    :high => :scale_up
+    _ => :monitor
+  }
+  :degraded => :investigate
+  :critical => :emergency_scale
+  _ => :unknown_action
+}

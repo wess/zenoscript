@@ -5,6 +5,34 @@ All notable changes to Zenoscript will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-06-30
+
+### Added
+- Enhanced test coverage with complex scenario testing (comments, nested matches, pipe chains)
+- Additional transpiler tests for edge cases and regression prevention
+- Better error handling and validation throughout the transpiler
+
+### Changed
+- **MAJOR IMPROVEMENT**: Completely rewrote pipe expression handling for cleaner, more readable output
+- **MAJOR IMPROVEMENT**: Fixed optional parentheses to properly preserve comments and avoid conflicts
+- Updated examples to only include implemented language features (removed `impl` blocks and guards)
+- Improved transpiler transformation order for better reliability
+- Enhanced string processing to avoid transformation inside literals
+
+### Fixed
+- **Critical**: Fixed pipe expressions producing malformed TypeScript output
+- **Critical**: Fixed optional parentheses incorrectly transforming content inside comments
+- **Critical**: Fixed complex pipe chains with method calls not working correctly
+- Fixed let bindings with pipe expressions causing parsing issues
+- Fixed string arguments in function calls being corrupted by transformation order
+- Removed unimplemented language features from examples that were causing confusion
+
+### Developer Experience
+- All examples now transpile correctly and demonstrate only implemented features
+- Improved test suite covers more real-world usage scenarios
+- Better separation of concerns in transpiler transformation phases
+- Enhanced debugging and validation during development
+
 ## [0.1.4] - 2025-06-30
 
 ### Added

@@ -78,7 +78,7 @@ zeno --version
 You should see output like:
 
 ```
-Zenoscript v0.1.4
+Zenoscript v0.1.5
 ```
 
 ## Create Your First Project

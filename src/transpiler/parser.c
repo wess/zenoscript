@@ -345,7 +345,59 @@ ASTNode* parser_parse_identifier(Parser* parser) {
     
     char* name = strdup(parser->current_token.value);
     parser_advance(parser);
-    return ast_create_identifier(name);
+    ASTNode* identifier = ast_create_identifier(name);
+    
+    // Check for function call - either with parentheses or optional parentheses
+    if (parser_check(parser, TOKEN_LPAREN)) {
+        // Traditional function call: func(arg1, arg2)
+        parser_advance(parser); // consume '('
+        ASTList* args = ast_list_new();
+        
+        if (!parser_check(parser, TOKEN_RPAREN)) {
+            do {
+                ASTNode* arg = parser_parse_expression(parser);
+                if (arg) {
+                    ast_list_add(args, arg);
+                }
+            } while (parser_match(parser, TOKEN_COMMA));
+        }
+        
+        parser_expect(parser, TOKEN_RPAREN);
+        return ast_create_call_expr(identifier, args);
+    } else if (parser_check(parser, TOKEN_IDENTIFIER) || 
+               parser_check(parser, TOKEN_NUMBER) || 
+               parser_check(parser, TOKEN_STRING) ||
+               parser_check(parser, TOKEN_ATOM)) {
+        // Optional parentheses: func arg1 arg2
+        // But exclude language keywords to avoid conflicts
+        if (strcmp(name, "match") == 0 || strcmp(name, "let") == 0 || 
+            strcmp(name, "struct") == 0 || strcmp(name, "trait") == 0 ||
+            strcmp(name, "impl") == 0) {
+            free(name);
+            return identifier;
+        }
+        
+        ASTList* args = ast_list_new();
+        
+        // Parse space-separated arguments until we hit a token that can't be an argument
+        while (parser_check(parser, TOKEN_IDENTIFIER) || 
+               parser_check(parser, TOKEN_NUMBER) || 
+               parser_check(parser, TOKEN_STRING) ||
+               parser_check(parser, TOKEN_ATOM)) {
+            ASTNode* arg = parser_parse_primary(parser);
+            if (arg) {
+                ast_list_add(args, arg);
+            } else {
+                break;
+            }
+        }
+        
+        free(name);
+        return ast_create_call_expr(identifier, args);
+    }
+    
+    free(name);
+    return identifier;
 }
 
 ASTNode* parser_parse_literal(Parser* parser) {

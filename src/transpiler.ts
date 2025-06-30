@@ -121,7 +121,7 @@ export class ZenoscriptTranspiler {
       const value = parts[0];
       const functions = parts.slice(1);
 
-      // Build nested function calls from right to left
+      // Build nested function calls from left to right
       let expr = value;
       for (const func of functions) {
         if (func.includes(".")) {
@@ -129,7 +129,7 @@ export class ZenoscriptTranspiler {
           expr = `${func}(${expr})`;
         } else {
           // Handle method calls by converting to dot notation
-          expr = `(${expr}).${func}()`;
+          expr = `${expr}.${func}()`;
         }
       }
 
@@ -186,18 +186,18 @@ export class ZenoscriptTranspiler {
 
   private transformOptionalParens(source: string): string {
     // Transform function calls without parentheses: myFunction x -> myFunction(x)
-    // But skip strings and other contexts where it shouldn't apply
+    // But skip comments and strings where it shouldn't apply
 
-    // Split on strings to avoid processing inside them
-    const parts = source.split(/("[^"]*"|'[^']*')/);
-
+    // Split on comments and strings to avoid processing inside them
+    const parts = source.split(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|"[^"]*"|'[^']*')/);
+    
     for (let i = 0; i < parts.length; i += 2) {
-      // Only process non-string parts
+      // Only process non-comment, non-string parts
       if (parts[i]) {
+        // Handle function calls with variable/number arguments
         parts[i] = parts[i].replace(
-          /\b(\w+)\s+([a-zA-Z_$][\w$]*|\d+|\[[^\]]*\]|\{[^}]*\})(?=\s|$|;|\)|,)/g,
+          /(\b\w+)\s+([a-zA-Z_$][\w$]*|\d+)(?=\s|$|;|\)|,)/g,
           (match, funcName, arg) => {
-            // Don't transform known keywords or operators
             const keywords = [
               "if",
               "else",
@@ -222,12 +222,10 @@ export class ZenoscriptTranspiler {
       }
     }
 
-    // Now handle string arguments (which are preserved in the parts array)
-    let result = parts.join("");
-
-    // Process function calls with string arguments that were split out
-    result = result.replace(
-      /\b(\w+)\s+("[^"]*"|'[^']*')(?=\s|$|;|\)|,)/g,
+    // Now handle string arguments separately to avoid the parentheses issue
+    const result = parts.join("");
+    return result.replace(
+      /(\b\w+)\s+("[^"]*"|'[^']*')(?=\s|$|;|\)|,)/g,
       (match, funcName, stringArg) => {
         const keywords = [
           "if",
@@ -250,8 +248,6 @@ export class ZenoscriptTranspiler {
         return `${funcName}(${stringArg})`;
       },
     );
-
-    return result;
   }
 
   private transformSimplifiedIf(source: string): string {

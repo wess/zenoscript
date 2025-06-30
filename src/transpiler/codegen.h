@@ -42,6 +42,7 @@ void codegen_generate_type_annotation(CodeGenerator* gen, ASTNode* node);
 void codegen_generate_field_decl(CodeGenerator* gen, ASTNode* node);
 void codegen_generate_method_decl(CodeGenerator* gen, ASTNode* node);
 void codegen_generate_match_arm(CodeGenerator* gen, ASTNode* node);
+void codegen_generate_call_expr(CodeGenerator* gen, ASTNode* node);
 void codegen_generate_expression(CodeGenerator* gen, ASTNode* node);
 
 // Helper functions

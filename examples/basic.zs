@@ -13,47 +13,23 @@ struct ApiResponse<T> {
   message: string;
 }
 
-// Trait declaration
+// Trait declarations
 trait Serializable {
   serialize(): string;
-  deserialize(data: string): Self;
+  deserialize(data: string): any;
 }
 
 trait Displayable {
   display(): string;
 }
 
-// Implementation blocks
-impl User {
-  new(name: string, email: string, age: number) {
-    return { name, email, age };
-  }
-  
-  isAdult() {
-    return this.age >= 18;
-  }
-}
+// Let bindings and values
+let userName = "Alice"
+let userEmail = "alice@example.com"
+let userAge = 25
 
-impl Serializable for User {
-  serialize() {
-    return JSON.stringify(this);
-  }
-  
-  deserialize(data: string) {
-    return JSON.parse(data);
-  }
-}
-
-impl Displayable for User {
-  display() {
-    return `${this.name} (${this.email})`;
-  }
-}
-
-// Let bindings and pipe expressions
-let user = User.new("Alice", "alice@example.com", 25)
-let userJson = user |> serialize
-let displayStr = user |> display
+// Create user object
+let user = { name: userName, email: userEmail, age: userAge }
 
 // Atoms and pattern matching
 let status = :loading
@@ -66,25 +42,30 @@ let statusMessage = match status {
   _ => "Unknown status"
 }
 
-// More complex pattern matching with guards
-let userStatus = match user.age {
-  age when age < 13 => :child
-  age when age < 18 => :teenager
-  age when age < 65 => :adult
-  _ => :senior
-}
+// Simple pipe operations
+let greeting = "  Hello World  " |> trim |> toUpperCase
+let result = greeting |> console.log
 
-// Chained pipe operations
-let processedData = "  Hello World  " 
-  |> trim 
-  |> toUpperCase 
-  |> console.log
+// More pipe examples
+let data = "zenoscript"
+let processed = data |> toUpperCase |> console.log
 
-// Generic usage
+// Object creation and JSON
 let apiResponse = {
   status: 200,
   data: user,
   message: "User retrieved successfully"
 }
 
-let response = apiResponse |> serialize
+// Function calls with optional parentheses
+console.log "Status message:"
+console.log statusMessage
+
+// Conditional logic with simplified if
+if userAge >= 18 {
+  console.log "User is an adult"
+}
+
+if status == :loading {
+  console.log "Currently loading..."
+}

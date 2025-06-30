@@ -197,6 +197,7 @@ ASTNode* ast_create_atom_literal(char* value);
 ASTNode* ast_create_block(ASTList* statements);
 ASTNode* ast_create_field_decl(char* name, ASTNode* type_annotation);
 ASTNode* ast_create_method_decl(char* name, ASTList* params, ASTNode* return_type, ASTNode* body);
+ASTNode* ast_create_call_expr(ASTNode* function, ASTList* args);
 
 // Utility functions
 void ast_print(ASTNode* node, int indent);

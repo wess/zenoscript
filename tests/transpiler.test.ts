@@ -62,7 +62,7 @@ test("transpiler - pipe expression with method calls", async () => {
   
   const result = await transpileSource(source);
   expect(result.exitCode).toBe(0);
-  expect(result.stdout).toContain('(("  hello  ").trim()).toUpperCase()');
+  expect(result.stdout).toContain('"  hello  ".trim().toUpperCase()');
 });
 
 test("transpiler - pipe expression with console.log", async () => {
@@ -78,7 +78,7 @@ test("transpiler - chained pipe with console.log", async () => {
   
   const result = await transpileSource(source);
   expect(result.exitCode).toBe(0);
-  expect(result.stdout).toContain('console.log(((\"  hello  \").trim()).toUpperCase())');
+  expect(result.stdout).toContain('console.log("  hello  ".trim().toUpperCase())');
 });
 
 test("transpiler - pipe with variable", async () => {
@@ -260,4 +260,60 @@ test("transpiler - simplified if with string comparison", async () => {
   const result = await transpileSource(source);
   expect(result.exitCode).toBe(0);
   expect(result.stdout).toContain('if (name == "John") {');
+});
+
+// Additional tests for complex scenarios
+test("transpiler - comments are preserved", async () => {
+  const source = `// This is a comment
+let x = 42`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('// This is a comment');
+  expect(result.stdout).toContain('const x = 42;');
+});
+
+test("transpiler - multiline comments are preserved", async () => {
+  const source = `/* This is a 
+     multiline comment */
+let x = 42`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('/* This is a');
+  expect(result.stdout).toContain('multiline comment */');
+});
+
+test("transpiler - complex pipe chain with method calls", async () => {
+  const source = `let result = "hello world" |> trim |> toUpperCase |> split |> join`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('const result = "hello world".trim().toUpperCase().split().join();');
+});
+
+test("transpiler - nested match expressions", async () => {
+  const source = `match status {
+    :loading => match progress {
+      :started => "Loading started"
+      :complete => "Loading complete"
+      _ => "Loading..."
+    }
+    :error => "Failed"
+    _ => "Unknown"
+  }`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('if (__match_value === Symbol.for("loading"))');
+  expect(result.stdout).toContain('Symbol.for("started")');
+  expect(result.stdout).toContain('Symbol.for("complete")');
+});
+
+test("transpiler - let binding with pipe in same line", async () => {
+  const source = `let result = data |> transform |> validate`;
+  
+  const result = await transpileSource(source);
+  expect(result.exitCode).toBe(0);
+  expect(result.stdout).toContain('const result = data.transform().validate();');
 });

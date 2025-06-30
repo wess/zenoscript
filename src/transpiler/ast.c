@@ -271,6 +271,13 @@ ASTNode* ast_create_method_decl(char* name, ASTList* params, ASTNode* return_typ
     return node;
 }
 
+ASTNode* ast_create_call_expr(ASTNode* function, ASTList* args) {
+    ASTNode* node = ast_node_new(AST_CALL_EXPR);
+    node->call_expr.function = function;
+    node->call_expr.args = args;
+    return node;
+}
+
 const char* ast_node_type_to_string(ASTNodeType type) {
     switch (type) {
         case AST_PROGRAM: return "PROGRAM";

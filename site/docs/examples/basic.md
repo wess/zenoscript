@@ -1,6 +1,6 @@
 # Basic Examples
 
-Learn the fundamentals of Zenoscript with these beginner-friendly examples.
+Learn the fundamentals of Zenoscript with these beginner-friendly examples. All examples shown here are fully implemented and working in Zenoscript 0.1.5.
 
 ## Hello World
 
@@ -8,7 +8,7 @@ The simplest Zenoscript program:
 
 ```zenoscript
 let message = "Hello, Zenoscript!"
-console.log(message)
+console.log message
 ```
 
 **Compiles to:**
@@ -17,20 +17,20 @@ const message = "Hello, Zenoscript!";
 console.log(message);
 ```
 
-## Variables and Types
+## Variables and Data
 
 ```zenoscript
-// Basic types
+// Let bindings (immutable by default)
 let name = "Alice"
 let age = 30
 let isActive = true
 let score = 95.5
 
-// Arrays
+// Arrays and objects work as expected
 let numbers = [1, 2, 3, 4, 5]
 let names = ["Alice", "Bob", "Charlie"]
 
-// Objects
+// Object literals
 let user = {
   id: 1,
   name: "Alice",
@@ -38,23 +38,20 @@ let user = {
 }
 ```
 
-## Functions
+## Optional Parentheses
+
+Function calls can omit parentheses for cleaner syntax:
 
 ```zenoscript
-// Simple function
-let greet = (name: string) => `Hello, ${name}!`
+// Traditional function calls
+console.log("Hello")
+myFunction("argument")
 
-// Function with multiple parameters
-let add = (a: number, b: number) => a + b
-
-// Function with destructuring
-let getFullName = ({ first, last }) => `${first} ${last}`
-
-// Higher-order function
-let twice = (fn, x) => fn(fn(x))
-let double = (x) => x * 2
-
-let result = twice(double, 5) // 20
+// Optional parentheses (Zenoscript style)
+console.log "Hello"
+myFunction "argument"
+processValue 42
+greet user.name
 ```
 
 ## Structs
@@ -74,124 +71,211 @@ struct Address {
   country: string;
 }
 
-// Using structs
-let person: Person = {
+// Create objects that match the struct types
+let person = {
   name: "Alice",
   age: 30,
   email: "alice@example.com"
 }
 
-let address: Address = {
+let address = {
   street: "123 Main St",
   city: "New York",
   country: "USA"
 }
 ```
 
-## Atoms
+**Compiles to:**
+```typescript
+type Person = {
+  name: string;
+  age: number;
+  email: string;
+};
 
-Type-safe constants using the atom syntax:
+type Address = {
+  street: string;
+  city: string;
+  country: string;
+};
+```
+
+## Traits (Interfaces)
+
+Define behavior contracts:
 
 ```zenoscript
-// Status atoms
-let :pending = Symbol.for("pending")
-let :complete = Symbol.for("complete") 
-let :failed = Symbol.for("failed")
+trait Serializable {
+  serialize(): string;
+  deserialize(data: string): any;
+}
 
-// Color atoms
-let :red = Symbol.for("red")
-let :green = Symbol.for("green")
-let :blue = Symbol.for("blue")
+trait Displayable {
+  display(): string;
+}
+```
 
-// Using atoms
+**Compiles to:**
+```typescript
+interface Serializable {
+  serialize(): string;
+  deserialize(data: string): any;
+}
+
+interface Displayable {
+  display(): string;
+}
+```
+
+## Atoms
+
+Type-safe symbolic constants:
+
+```zenoscript
+// Define atoms (compile to symbols)
 let status = :pending
-let primaryColor = :blue
+let result = :success
+let color = :blue
 
-// Atoms are great for enums
-let getStatusMessage = (status) => {
-  if (status === :pending) return "In progress..."
-  if (status === :complete) return "Done!"
-  if (status === :failed) return "Something went wrong"
-  return "Unknown status"
+// Use in conditionals
+if status == :pending {
+  console.log "Still processing..."
+}
+
+if result == :success {
+  console.log "Operation completed!"
+}
+```
+
+**Compiles to:**
+```typescript
+const status = Symbol.for("pending");
+const result = Symbol.for("success");
+const color = Symbol.for("blue");
+
+if (status == Symbol.for("pending")) {
+  console.log("Still processing...");
+}
+
+if (result == Symbol.for("success")) {
+  console.log("Operation completed!");
 }
 ```
 
 ## Pattern Matching
 
-Control flow with pattern matching:
+Pattern matching for control flow:
 
 ```zenoscript
 // Simple pattern matching
-let describeNumber = (n) => match n {
-  0 => "zero"
-  1 => "one"  
-  2 => "two"
-  _ => "many"
-}
-
-// Pattern matching with atoms
-let handleStatus = (status) => match status {
+let handleStatus = match :loading {
+  :idle => "Ready to start"
   :loading => "Please wait..."
   :success => "Operation completed!"
   :error => "Something went wrong"
   _ => "Unknown status"
 }
 
-// Pattern matching with values
-let processResult = (result) => match result {
-  { type: :success, data } => `Success: ${data}`
-  { type: :error, message } => `Error: ${message}`
-  _ => "Invalid result"
+// Pattern matching in variables
+let status = :error
+let message = match status {
+  :pending => "Processing..."
+  :success => "Done!"
+  :error => "Failed!"
+  _ => "Unknown"
 }
+```
+
+**Compiles to:**
+```typescript
+const handleStatus = (() => {
+  const __match_value = Symbol.for("loading");
+  if (__match_value === Symbol.for("idle")) {
+    return "Ready to start";
+  } else if (__match_value === Symbol.for("loading")) {
+    return "Please wait...";
+  } else if (__match_value === Symbol.for("success")) {
+    return "Operation completed!";
+  } else if (__match_value === Symbol.for("error")) {
+    return "Something went wrong";
+  } else {
+    return "Unknown status";
+  }
+})()
 ```
 
 ## Pipe Operations
 
-Chain operations for readable data processing:
+Chain operations for readable data transformation:
 
 ```zenoscript
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-// Traditional approach
-let traditionalResult = numbers
-  .filter(n => n % 2 === 0)
-  .map(n => n * n)
-  .reduce((sum, n) => sum + n, 0)
-
-// Zenoscript pipe approach
-let pipeResult = numbers
-  |> filter(n => n % 2 === 0)    // [2, 4, 6, 8, 10]
-  |> map(n => n * n)             // [4, 16, 36, 64, 100]
-  |> reduce((sum, n) => sum + n, 0) // 220
-
-// String processing
+// String processing with pipes
 let text = "  hello world  "
-let processed = text
-  |> trim
-  |> toUpperCase
-  |> split(" ")
-  |> join("-")  // "HELLO-WORLD"
+let processed = text |> trim |> toUpperCase
+
+console.log processed // "HELLO WORLD"
+
+// Chain multiple transformations
+let greeting = "zenoscript" |> toUpperCase |> console.log
+
+// Data processing
+let data = [1, 2, 3]
+let result = data |> toString |> console.log
 ```
 
-## Working with Arrays
+**Compiles to:**
+```typescript
+const text = "  hello world  ";
+const processed = text.trim().toUpperCase();
+
+console.log(processed);
+
+const greeting = console.log("zenoscript".toUpperCase());
+
+const data = [1, 2, 3];
+const result = console.log(data.toString());
+```
+
+## Simplified If Statements
+
+Zenoscript allows omitting parentheses around if conditions:
 
 ```zenoscript
-let fruits = ["apple", "banana", "cherry", "date"]
+let age = 25
 
-// Filter fruits starting with 'a'
-let aFruits = fruits |> filter(fruit => fruit.startsWith("a"))
+// Traditional if statement
+if (age >= 18) {
+  console.log("Adult")
+}
 
-// Get fruit lengths
-let lengths = fruits |> map(fruit => fruit.length)
+// Simplified if (Zenoscript style)
+if age >= 18 {
+  console.log "Adult"
+}
 
-// Find the longest fruit
-let longest = fruits |> reduce((a, b) => a.length > b.length ? a : b)
+// With atoms
+let status = :active
+if status == :active {
+  console.log "User is active"
+}
+```
 
-// Check if any fruit is longer than 5 characters
-let hasLong = fruits |> some(fruit => fruit.length > 5)
+**Compiles to:**
+```typescript
+const age = 25;
 
-// Check if all fruits are strings
-let allStrings = fruits |> every(fruit => typeof fruit === "string")
+if (age >= 18) {
+  console.log("Adult");
+}
+
+if (age >= 18) {
+  console.log("Adult");
+}
+
+const status = Symbol.for("active");
+if (status == Symbol.for("active")) {
+  console.log("User is active");
+}
 ```
 
 ## Working with Objects
@@ -204,90 +288,78 @@ struct User {
   active: boolean;
 }
 
-let users = [
-  { id: 1, name: "Alice", age: 30, active: true },
-  { id: 2, name: "Bob", age: 25, active: false },
-  { id: 3, name: "Charlie", age: 35, active: true }
-]
+// Create user objects
+let user1 = { id: 1, name: "Alice", age: 30, active: true }
+let user2 = { id: 2, name: "Bob", age: 25, active: false }
 
-// Get active users
-let activeUsers = users |> filter(user => user.active)
+// Process user data
+let userName = user1.name |> toUpperCase |> console.log
+let userId = user1.id |> toString |> console.log
 
-// Get user names
-let userNames = users |> map(user => user.name)
+// Conditional processing
+if user1.active {
+  console.log "User is active"
+} 
 
-// Find user by ID
-let findUser = (id) => users |> find(user => user.id === id)
-
-// Calculate average age
-let averageAge = users
-  |> map(user => user.age)
-  |> reduce((sum, age) => sum + age, 0)
-  |> (total => total / users.length)
-```
-
-## Error Handling
-
-```zenoscript
-// Result type pattern
-let parseNumber = (str) => {
-  let num = parseInt(str)
-  return isNaN(num) 
-    ? { type: :error, message: "Not a valid number" }
-    : { type: :success, value: num }
-}
-
-// Using the result
-let handleInput = (input) => match parseNumber(input) {
-  { type: :success, value } => `Parsed: ${value}`
-  { type: :error, message } => `Error: ${message}`
-}
-
-// Option type pattern
-let safeDivide = (a, b) => 
-  b === 0 ? { type: :none } : { type: :some, value: a / b }
-
-let divisionResult = match safeDivide(10, 2) {
-  { type: :some, value } => `Result: ${value}`
-  { type: :none } => "Cannot divide by zero"
+if user2.age >= 21 {
+  console.log "User is old enough"
 }
 ```
 
-## Recursive Functions
+## Combining Features
+
+Real-world example combining multiple Zenoscript features:
 
 ```zenoscript
-// Factorial
-let factorial = (n) => match n {
-  0 => 1
-  1 => 1
-  _ => n * factorial(n - 1)
+struct Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
 }
 
-// Fibonacci
-let fibonacci = (n) => match n {
-  0 => 0
-  1 => 1
-  _ => fibonacci(n - 1) + fibonacci(n - 2)
+// Sample data
+let product = { 
+  id: 1, 
+  name: "laptop", 
+  price: 999.99, 
+  category: "electronics" 
 }
 
-// List operations
-let sum = (list) => match list {
-  [] => 0
-  [head, ...tail] => head + sum(tail)
+// Process product information
+let productInfo = product.name |> toUpperCase
+console.log productInfo
+
+// Check category
+let categoryStatus = match product.category {
+  "electronics" => :tech
+  "books" => :education  
+  "clothing" => :fashion
+  _ => :other
 }
 
-let length = (list) => match list {
-  [] => 0
-  [_, ...tail] => 1 + length(tail)
+// Price evaluation
+if product.price > 500 {
+  console.log "Premium product"
 }
+
+// Status messages
+let statusMessage = match categoryStatus {
+  :tech => "High-tech item"
+  :education => "Educational material"
+  :fashion => "Fashion item"
+  _ => "General product"
+}
+
+console.log statusMessage
 ```
 
 ## Next Steps
 
-Ready for more advanced examples? Check out:
+Now that you understand the basics, explore:
 
-- [Advanced Examples](/examples/advanced) - Complex patterns and techniques
-- [Concurrent Programming](/examples/advanced#concurrent-programming) - Async patterns
+- [Advanced Examples](/examples/advanced) - Complex patterns and state management
 - [Language Guide](/docs/syntax) - Complete syntax reference
+- [REPL](/docs/repl) - Try examples interactively
 
-Try these examples in the [REPL](/docs/repl) to see them in action!
+All the examples above are fully functional in Zenoscript 0.1.5!

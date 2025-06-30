@@ -433,6 +433,23 @@ void codegen_generate_method_decl(CodeGenerator* gen, ASTNode* node) {
     codegen_write(gen, "\n");
 }
 
+void codegen_generate_call_expr(CodeGenerator* gen, ASTNode* node) {
+    if (node->type != AST_CALL_EXPR) return;
+    
+    // Generate the function name/expression
+    codegen_generate_expression(gen, node->call_expr.function);
+    
+    // Generate the argument list
+    codegen_write(gen, "(");
+    if (node->call_expr.args && node->call_expr.args->count > 0) {
+        for (int i = 0; i < node->call_expr.args->count; i++) {
+            if (i > 0) codegen_write(gen, ", ");
+            codegen_generate_expression(gen, node->call_expr.args->nodes[i]);
+        }
+    }
+    codegen_write(gen, ")");
+}
+
 void codegen_generate_expression(CodeGenerator* gen, ASTNode* node) {
     switch (node->type) {
         case AST_IDENTIFIER:
@@ -451,6 +468,9 @@ void codegen_generate_expression(CodeGenerator* gen, ASTNode* node) {
             break;
         case AST_BLOCK:
             codegen_generate_block(gen, node);
+            break;
+        case AST_CALL_EXPR:
+            codegen_generate_call_expr(gen, node);
             break;
         default:
             break;

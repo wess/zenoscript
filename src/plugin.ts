@@ -52,9 +52,9 @@ async function transpileZenoscript(source: string, _path: string): Promise<strin
   }
 }
 
-export const zenoscriptPlugin = plugin({
+const zenoscriptPlugin = {
   name: "zenoscript",
-  setup(build) {
+  setup(build: any) {
     // Handle .zs files for both bundling and loading
     build.onLoad({ filter: /\.zs$/ }, async (args) => {
       const source = await Bun.file(args.path).text();
@@ -96,6 +96,7 @@ export const zenoscriptPlugin = plugin({
       };
     });
   },
-});
+};
 
+export { zenoscriptPlugin };
 export default zenoscriptPlugin;
