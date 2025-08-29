@@ -14,7 +14,27 @@ A functional programming language that compiles to TypeScript, featuring Rust-in
 
 ## Installation
 
+### Using npm (recommended)
+
 ```bash
+# Install globally
+npm install -g zenoscript
+
+# Or using bun
+bun install -g zenoscript
+
+# Or using yarn
+yarn global add zenoscript
+```
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/wess/zenoscript.git
+cd zenoscript
+
+# Install dependencies and build
 bun install
 bun run build
 ```

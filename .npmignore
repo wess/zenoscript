@@ -1,0 +1,44 @@
+# Source files
+src/
+!src/*.d.ts
+
+# Development files
+tsconfig.json
+bunfig.toml
+bun.lock
+.tool-versions
+
+# Tests
+tests/
+test-integration/
+test-projects/
+test-runner.ts
+*.test.ts
+*.test.js
+*.test.zs
+
+# Documentation site
+site/
+
+# VSCode extension
+vscode/
+
+# Build artifacts (keep only the darwin-arm64 build for the bin)
+build/darwin-x64/
+build/linux-x64/
+build/windows-x64/
+build/zeno
+build/zenovm
+
+# Examples (these should be included, so we comment them out)
+# examples/
+
+# Development configs
+biome.json
+BUILD.md
+CLAUDE.md
+llm_language_spec.txt
+
+# Logs
+*.log
+npm-debug.log*

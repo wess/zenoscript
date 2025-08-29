@@ -1,18 +1,19 @@
 {
   "name": "zenoscript",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A functional programming language that compiles to TypeScript",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
+  "main": "bin/zeno.js",
   "type": "module",
   "bin": {
-    "zeno": "src/index.ts"
+    "zeno": "bin/zeno.js"
   },
-  "exports": {
-    ".": "./src/index.ts",
-    "./plugin": "./src/plugin.ts",
-    "./preload": "./src/preload.ts"
-  },
+  "files": [
+    "bin/",
+    "build/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "bun test",
     "dev": "bun --hot src/index.ts",
@@ -24,7 +25,8 @@
     "compile:windows-x64": "bun build --compile --target=bun-windows-x64 --outfile=build/windows-x64/zeno.exe src/index.ts",
     "compile": "bun run compile:linux-x64 && bun run compile:darwin-x64 && bun run compile:darwin-arm64 && bun run compile:windows-x64",
     "build": "bun run compile:darwin-arm64",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build",
+    "prepublishOnly": "bun run compile"
   },
   "keywords": [
     "programming-language",
